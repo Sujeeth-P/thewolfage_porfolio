@@ -1,4 +1,4 @@
-import { motion, useMotionTemplate, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import { motion, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PillNav from './components/PillNav';
 import wolfLogo from './assets/wolf.png';
+import endwolfImg from './assets/endwolf.png';
 import peep1 from "./assets/peep/peep-standing-1.png";
 import peep2 from "./assets/peep/peep-standing-2.png";
 import peep3 from "./assets/peep/peep-standing-3.png";
@@ -163,148 +164,114 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '#contact' },
 ];
 
-// ─── HERO (Skiper28 — scroll-gated reveal) ───────────────────────────────────
-//
-// DESIGN INTENT:
-//   scroll = 0.00 → page loads completely dark. Only the "SCROLL" prompt shows.
-//   scroll = 0.00–0.35 → text tilts UP from below via perspective Y (Skiper28)
-//                         logo fades + scales in, tagline slides up
-//   scroll = 0.35–0.50 → fully revealed, steady
-//   scroll = 0.50–0.75 → everything fades out as next section approaches
-//
-// KEY RULES kept from previous fix:
-//   • No overflow:hidden on the 300vh scroll container
-//   • scroll-driven `transform` lives on its OWN element (never mixed with animate)
-//   • Each animated element gets its own motion values — no hook-in-loop
-
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 const Hero = () => {
   const targetRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: targetRef });
 
-  // ── Skiper28 core: text tilts in from bottom as you scroll ────────────────
-  // At scroll=0  → pushed far below + rotated away (invisible behind perspective)
-  // At scroll=0.4 → snaps to natural position (y=0, no tilt)
-  const yText = useTransform(scrollYProgress, [0, 0.38], [520, 0]);
-  const textXform = useMotionTemplate`rotateX(32deg) translateY(${yText}px) translateZ(0px)`;
+  // Manual scroll progress — avoids Framer Motion v12 + Lenis v1.3.x useScroll bug.
+  // Lenis calls window.scrollTo() which fires native scroll events we can listen to.
+  const progress = useMotionValue(0);
 
-  // ── Per-element scroll-driven opacity ─────────────────────────────────────
-  // Reveal phase: 0 → 0.25
-  // Hold phase:   0.25 → 0.55
-  // Exit phase:   0.55 → 0.78
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.18, 0.55, 0.76], [0, 1, 1, 0]);
-  const logoScale = useTransform(scrollYProgress, [0, 0.22], [0.4, 1]);
-  const textOpacity = useTransform(scrollYProgress, [0.04, 0.30, 0.55, 0.76], [0, 1, 1, 0]);
-  const taglineOpacity = useTransform(scrollYProgress, [0.18, 0.38, 0.55, 0.76], [0, 1, 1, 0]);
-  const taglineY = useTransform(scrollYProgress, [0.18, 0.38], [24, 0]);
-  const btnsOpacity = useTransform(scrollYProgress, [0.26, 0.44, 0.55, 0.76], [0, 1, 1, 0]);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = targetRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      progress.set(Math.max(0, Math.min(1, -rect.top / total)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [progress]);
 
-  // ── "SCROLL" prompt: visible at scroll=0, fades as text appears ───────────
-  const promptOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-  const promptY = useTransform(scrollYProgress, [0, 0.12], [0, -16]);
+  // Wolf logo: fully visible at page load, fades to ~45% as user scrolls
+  const wolfOpacity = useTransform(progress, [0, 0.45], [1, 0.45]);
+
+  // Text: invisible at load, fades in + rises from below
+  const textOpacity = useTransform(progress, [0.12, 0.42, 0.62, 0.78], [0, 1, 1, 0]);
+  const textY = useTransform(progress, [0.12, 0.42], [60, 0]);
+
+  // Tagline: appears after text
+  const taglineOpacity = useTransform(progress, [0.22, 0.46, 0.62, 0.78], [0, 1, 1, 0]);
+  const taglineY = useTransform(progress, [0.22, 0.46], [24, 0]);
+
+  // Buttons: last to appear
+  const btnsOpacity = useTransform(progress, [0.32, 0.52, 0.62, 0.78], [0, 1, 1, 0]);
 
   return (
     <div
       ref={targetRef}
       style={{ position: "relative", height: "320vh", width: "100%", background: "#080808" }}
     >
-      {/* ── background grid ── */}
+      {/* background grid */}
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
         backgroundImage: "linear-gradient(rgba(232,240,32,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(232,240,32,0.035) 1px, transparent 1px)",
         backgroundSize: "80px 80px",
       }} />
-      {/* ── radial glow, grows in sync with reveal ── */}
-      <motion.div style={{
-        position: "absolute", top: "28%", left: "50%", translateX: "-50%", translateY: "-50%",
-        width: "70vw", height: "70vw", pointerEvents: "none",
-        background: "radial-gradient(ellipse, rgba(232,240,32,0.09) 0%, transparent 68%)",
-        opacity: textOpacity,
-      }} />
 
-      {/* ── sticky viewport ── */}
+      {/* sticky viewport */}
       <div style={{
         position: "sticky", top: 0, height: "100vh",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
-        perspective: "300px", perspectiveOrigin: "center 52%",
-        overflow: "hidden",   // safe here — sticky container, not the scroll target
+        overflow: "hidden",
       }}>
 
-        {/* 1 ── SCROLL prompt (only thing visible at scroll=0) ── */}
-        {/* <motion.div style={{
-          position: "absolute", bottom: "2.8rem", left: "50%", translateX: "-50%",
-          opacity: promptOpacity, y: promptY,
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "0.6rem",
+        {/* Wolf logo — centered behind text, fades as user scrolls */}
+        <motion.div style={{
+          position: "absolute",
+          top: "50%", left: "50%",
+          translateX: "-50%", translateY: "-50%",
+          opacity: wolfOpacity,
+          pointerEvents: "none",
         }}>
-          <span style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "0.65rem", letterSpacing: "0.45em",
-            color: "#E8F020", textTransform: "uppercase",
-          }}>Scroll</span>
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-          >
-            <div style={{ width: 1, height: 52, background: "linear-gradient(to bottom, #E8F020, transparent)" }} />
-          </motion.div>
-        </motion.div> */}
-
-
-
-
-
-
-        {/* 2 ── Wolf logo — fades + scales in ── */}
-        {/* <motion.div style={{ opacity: logoOpacity, scale: logoScale, marginBottom: "1.2rem" }}>
-          <WolfLogo size={80} />
-        </motion.div> */}
-
-        {/* 3 ── Main title — Skiper28 perspective scroll tilt ── */}
-        {/* textOpacity wrapper: separate from transform wrapper (rule: never mix) */}
-        <motion.div style={{ opacity: textOpacity }}>
-          <motion.div style={{
-            transformStyle: "preserve-3d",
-            transform: textXform,        // ← ONLY scroll-driven 3D transform
-          }}>
-            <h1 style={{
-              fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-              fontSize: "clamp(5rem, 12.5vw, 13rem)",
-              color: "#E8F020",
-              lineHeight: 0.88,
-              letterSpacing: "-0.01em",
-              textAlign: "center",
-              margin: 0,
-              position: "relative",
-            }}>
-              THE<br />
-              <span style={{ color: "#fff", WebkitTextStroke: "2px #E8F020" }}>WOLF</span><br />
-              AGE
-              {/* Skiper28 source bottom fade */}
-              <div style={{
-                position: "absolute", bottom: 0, left: 0, width: "100%", height: "45%",
-                background: "linear-gradient(to bottom, transparent, #080808)",
-                pointerEvents: "none",
-              }} />
-            </h1>
-          </motion.div>
+          <img
+            src={endwolfImg}
+            alt=""
+            style={{ width: "min(52vw, 480px)", height: "auto", display: "block" }}
+          />
         </motion.div>
 
-        {/* 4 ── Tagline — slides up after title ── */}
+        {/* THE WOLF AGE — fades in + rises from below as user scrolls */}
+        <motion.div style={{ opacity: textOpacity, y: textY, position: "relative", zIndex: 2 }}>
+          <h1 style={{
+            fontFamily: "'Bebas Neue', 'Anton', sans-serif",
+            fontSize: "clamp(5rem, 12.5vw, 13rem)",
+            color: "#E8F020",
+            lineHeight: "88%",
+            // letterSpacing: "0.06em",
+            letterSpacing: "1%",
+            textAlign: "center",
+            margin: 0,
+          }}>
+            THE 
+            <span style={{ color: "#fff", WebkitTextStroke: "2px #E8F020" }}>WOLF</span> 
+             AGE
+          </h1>
+        </motion.div>
+
+        {/* Tagline */}
         <motion.p style={{
           opacity: taglineOpacity, y: taglineY,
           fontFamily: "'Space Grotesk', sans-serif",
           color: "#555", fontSize: "0.92rem",
           letterSpacing: "0.34em", marginTop: "2.2rem",
           textTransform: "uppercase",
+          // paddingTop: "28rem",
+          paddingTop: "28%",
+          position: "relative", zIndex: 2,
         }}>
           Digital Craft · Fearless Execution
         </motion.p>
 
-        {/* 5 ── CTA buttons — last to appear ── */}
+        {/* CTA buttons */}
         <motion.div style={{
           opacity: btnsOpacity,
           display: "flex", justifyContent: "center",
           marginTop: "2.6rem", gap: "1.2rem",
+          position: "relative", zIndex: 2,
         }}>
           <a href="#work" data-hover style={{
             padding: "0.9rem 2.5rem", background: "#E8F020", color: "#080808",
@@ -511,8 +478,22 @@ const Marquee = () => {
 // ─── PROJECTS (Skiper19 scroll path adapted) ──────────────────────────────────
 const Projects = () => {
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref });
-  const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const sectionProgress = useMotionValue(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      sectionProgress.set(Math.max(0, Math.min(1, -rect.top / total)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [sectionProgress]);
+
+  const pathLength = useTransform(sectionProgress, [0, 1], [0, 1]);
 
   return (
     <section id="work" ref={ref} style={{ background: "#080808", padding: "8rem 0", position: "relative" }}>
@@ -633,14 +614,28 @@ const AnimatedChar = React.memo(({ char, index, centerIndex, scrollYProgress }) 
     <motion.span
       style={{ x, rotateX, opacity, display: "inline-block", color: index < centerIndex ? "#E8F020" : "#fff" }}
     >
-      {char === " " ? "\u00A0" : char}
+      {char === " " ? " " : char}
     </motion.span>
   );
 });
 
 const Services = () => {
   const targetRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: targetRef });
+  const scrollYProgress = useMotionValue(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = targetRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      scrollYProgress.set(Math.max(0, Math.min(1, -rect.top / total)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollYProgress]);
+
   const text = "WE BUILD DIGITAL WOLVES";
   const chars = text.split("");
   const centerIndex = Math.floor(chars.length / 2);
@@ -731,7 +726,22 @@ const ParallaxColumn = ({ color, yOffset, paddingTop }) => {
 
 const ParallaxSection = () => {
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scrollYProgress = useMotionValue(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // offset ["start end", "end start"]: 0 when top enters bottom, 1 when bottom exits top
+      const total = el.offsetHeight + viewH;
+      const scrolled = viewH - rect.top;
+      scrollYProgress.set(Math.max(0, Math.min(1, scrolled / total)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollYProgress]);
 
   // Different speeds per column — same as Skiper30 source pattern
   const y1 = useTransform(scrollYProgress, [0, 1], ["0%", "-22%"]);
