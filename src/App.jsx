@@ -1,8 +1,11 @@
 import { motion, useMotionTemplate, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import PillNav from './components/PillNav';
+import wolfLogo from './assets/wolf.png';
 import peep1 from "./assets/peep/peep-standing-1.png";
 import peep2 from "./assets/peep/peep-standing-2.png";
 import peep3 from "./assets/peep/peep-standing-3.png";
@@ -39,6 +42,7 @@ const PEEP_SRCS = [
   peep11, peep12, peep13, peep14, peep15, peep16, peep17, peep18, peep19, peep20,
   peep21, peep22, peep23, peep24, peep25, peep26, peep27, peep28, peep29, peep30,
 ];
+gsap.registerPlugin(ScrollTrigger);
 // ─── WOLF SVG LOGO ────────────────────────────────────────────────────────────
 const WolfLogo = ({ size = 48, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -111,7 +115,7 @@ const SERVICES = [
   { icon: "○", label: "Consulting", desc: "Architecture reviews, performance audits, tech strategy." },
 ];
 
-const STACK = ["React", "TypeScript", "Framer Motion", "Three.js", "Node.js", "PostgreSQL", "Solidity", "React Native", "Figma", "AWS"];
+const STACK = ["React", "TypeScript", "Framer Motion", "Three.js", "Node.js", "PostgreSQL", "React Native", "Figma", "AWS"];
 
 // ─── CURSOR ───────────────────────────────────────────────────────────────────
 const CustomCursor = () => {
@@ -137,7 +141,7 @@ const CustomCursor = () => {
       animate={{ scale: hovered ? 2.5 : 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#E8F020", mixBlendMode: "difference" }} />
+      <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#DCDCDC", mixBlendMode: "difference" }} />
     </motion.div>
   );
 };
@@ -151,50 +155,13 @@ const NoiseOverlay = () => (
   }} />
 );
 
-// ─── NAV ──────────────────────────────────────────────────────────────────────
-const Nav = () => {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
-
-  return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        padding: "1.2rem 2.5rem",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        background: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-        borderBottom: scrolled ? "1px solid rgba(232,240,32,0.08)" : "none",
-        transition: "all 0.4s ease",
-        fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <WolfLogo size={36} />
-        <span style={{ color: "#E8F020", fontSize: "1.4rem", letterSpacing: "0.15em" }}>THEWOLFAGE</span>
-      </div>
-      <div style={{ display: "flex", gap: "2.5rem" }}>
-        {["WORK", "SERVICES", "STACK", "CONTACT"].map((item) => (
-          <a key={item} href={`#${item.toLowerCase()}`} data-hover style={{
-            color: "#888", fontSize: "0.75rem", letterSpacing: "0.2em",
-            textDecoration: "none", transition: "color 0.2s",
-            fontFamily: "'Space Grotesk', sans-serif",
-          }}
-            onMouseEnter={(e) => e.target.style.color = "#E8F020"}
-            onMouseLeave={(e) => e.target.style.color = "#888"}
-          >{item}</a>
-        ))}
-      </div>
-    </motion.nav>
-  );
-};
+// ─── NAV ITEMS ────────────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { label: 'Work', href: '#work' },
+  { label: 'Services', href: '#services' },
+  { label: 'Stack', href: '#stack' },
+  { label: 'Contact', href: '#contact' },
+];
 
 // ─── HERO (Skiper28 — scroll-gated reveal) ───────────────────────────────────
 //
@@ -217,23 +184,23 @@ const Hero = () => {
   // ── Skiper28 core: text tilts in from bottom as you scroll ────────────────
   // At scroll=0  → pushed far below + rotated away (invisible behind perspective)
   // At scroll=0.4 → snaps to natural position (y=0, no tilt)
-  const yText     = useTransform(scrollYProgress, [0, 0.38], [520, 0]);
+  const yText = useTransform(scrollYProgress, [0, 0.38], [520, 0]);
   const textXform = useMotionTemplate`rotateX(32deg) translateY(${yText}px) translateZ(0px)`;
 
   // ── Per-element scroll-driven opacity ─────────────────────────────────────
   // Reveal phase: 0 → 0.25
   // Hold phase:   0.25 → 0.55
   // Exit phase:   0.55 → 0.78
-  const logoOpacity    = useTransform(scrollYProgress, [0, 0.18, 0.55, 0.76], [0, 1, 1, 0]);
-  const logoScale      = useTransform(scrollYProgress, [0, 0.22], [0.4, 1]);
-  const textOpacity    = useTransform(scrollYProgress, [0.04, 0.30, 0.55, 0.76], [0, 1, 1, 0]);
+  const logoOpacity = useTransform(scrollYProgress, [0, 0.18, 0.55, 0.76], [0, 1, 1, 0]);
+  const logoScale = useTransform(scrollYProgress, [0, 0.22], [0.4, 1]);
+  const textOpacity = useTransform(scrollYProgress, [0.04, 0.30, 0.55, 0.76], [0, 1, 1, 0]);
   const taglineOpacity = useTransform(scrollYProgress, [0.18, 0.38, 0.55, 0.76], [0, 1, 1, 0]);
-  const taglineY       = useTransform(scrollYProgress, [0.18, 0.38], [24, 0]);
-  const btnsOpacity    = useTransform(scrollYProgress, [0.26, 0.44, 0.55, 0.76], [0, 1, 1, 0]);
+  const taglineY = useTransform(scrollYProgress, [0.18, 0.38], [24, 0]);
+  const btnsOpacity = useTransform(scrollYProgress, [0.26, 0.44, 0.55, 0.76], [0, 1, 1, 0]);
 
   // ── "SCROLL" prompt: visible at scroll=0, fades as text appears ───────────
-  const promptOpacity  = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-  const promptY        = useTransform(scrollYProgress, [0, 0.12], [0, -16]);
+  const promptOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  const promptY = useTransform(scrollYProgress, [0, 0.12], [0, -16]);
 
   return (
     <div
@@ -264,7 +231,7 @@ const Hero = () => {
       }}>
 
         {/* 1 ── SCROLL prompt (only thing visible at scroll=0) ── */}
-        <motion.div style={{
+        {/* <motion.div style={{
           position: "absolute", bottom: "2.8rem", left: "50%", translateX: "-50%",
           opacity: promptOpacity, y: promptY,
           display: "flex", flexDirection: "column", alignItems: "center", gap: "0.6rem",
@@ -280,12 +247,17 @@ const Hero = () => {
           >
             <div style={{ width: 1, height: 52, background: "linear-gradient(to bottom, #E8F020, transparent)" }} />
           </motion.div>
-        </motion.div>
+        </motion.div> */}
+
+
+
+
+
 
         {/* 2 ── Wolf logo — fades + scales in ── */}
-        <motion.div style={{ opacity: logoOpacity, scale: logoScale, marginBottom: "1.2rem" }}>
+        {/* <motion.div style={{ opacity: logoOpacity, scale: logoScale, marginBottom: "1.2rem" }}>
           <WolfLogo size={80} />
-        </motion.div>
+        </motion.div> */}
 
         {/* 3 ── Main title — Skiper28 perspective scroll tilt ── */}
         {/* textOpacity wrapper: separate from transform wrapper (rule: never mix) */}
@@ -352,6 +324,164 @@ const Hero = () => {
 
       </div>
     </div>
+  );
+};
+
+// ─── HERO REVEAL ─────────────────────────────────────────────────────────────
+const heroRevealStatements = [
+  "We don't build websites.",
+  "We build predators.",
+  "Every brand has a nature.",
+  "We unleash it.",
+  "Welcome to The Wolf Age.",
+];
+
+const REVEAL_COLORS = ["#E8F020", "#ffffff", "#20F0D4", "#ffffff", "#E8F020"];
+
+const HeroReveal = () => {
+  const containerRef = useRef(null);
+  const textRefs = useRef([]);
+  const counterRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: `+=${heroRevealStatements.length * 100}%`,
+        pin: true,
+        scrub: 1,
+        onUpdate: (self) => {
+          const index = Math.min(
+            Math.floor(self.progress * heroRevealStatements.length),
+            heroRevealStatements.length - 1
+          );
+
+          textRefs.current.forEach((el, i) => {
+            if (!el) return;
+            if (i === index) {
+              gsap.to(el, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.out" });
+            } else {
+              gsap.to(el, { opacity: 0, scale: 0.92, filter: "blur(14px)", duration: 0.45, ease: "power2.out" });
+            }
+          });
+
+          if (counterRef.current) {
+            const n = String(index + 1).padStart(2, "0");
+            const t = String(heroRevealStatements.length).padStart(2, "0");
+            counterRef.current.textContent = `${n} / ${t}`;
+          }
+        },
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={containerRef}
+      style={{
+        height: "100vh",
+        background: "#080808",
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      {/* Grid */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: "linear-gradient(rgba(232,240,32,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(232,240,32,0.03) 1px, transparent 1px)",
+        backgroundSize: "80px 80px",
+      }} />
+
+      {/* Ambient glow */}
+      <div style={{
+        position: "absolute",
+        top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "60vw", height: "60vw",
+        background: "radial-gradient(ellipse, rgba(232,240,32,0.06) 0%, transparent 68%)",
+        borderRadius: "50%",
+        pointerEvents: "none",
+      }} />
+
+      {/* Statements */}
+      <div style={{ position: "relative", zIndex: 10, width: "100%", textAlign: "center" }}>
+        {heroRevealStatements.map((text, i) => (
+          <h2
+            key={i}
+            ref={el => { textRefs.current[i] = el; }}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "90%",
+              fontFamily: "'Bebas Neue', 'Anton', sans-serif",
+              fontSize: "clamp(3.5rem, 9vw, 9rem)",
+              color: REVEAL_COLORS[i],
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              margin: 0,
+              lineHeight: 1.05,
+              opacity: i === 0 ? 1 : 0,
+              filter: i === 0 ? "blur(0px)" : "blur(14px)",
+            }}
+          >
+            {text}
+          </h2>
+        ))}
+      </div>
+
+      {/* Counter */}
+      <div
+        ref={counterRef}
+        style={{
+          position: "absolute",
+          top: "2.5rem",
+          right: "2.5rem",
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: "0.68rem",
+          letterSpacing: "0.28em",
+          color: "rgba(232,240,32,0.45)",
+          zIndex: 10,
+        }}
+      >
+        01 / 05
+      </div>
+
+      {/* Vertical accent */}
+      <div style={{
+        position: "absolute",
+        left: "2.5rem",
+        top: "50%",
+        transform: "translateY(-50%)",
+        width: "1px",
+        height: "28vh",
+        background: "linear-gradient(to bottom, transparent, rgba(232,240,32,0.25), transparent)",
+        zIndex: 10,
+      }} />
+
+      {/* Bottom label */}
+      <div style={{
+        position: "absolute",
+        bottom: "2.8rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: "0.62rem",
+        letterSpacing: "0.4em",
+        color: "rgba(232,240,32,0.3)",
+        textTransform: "uppercase",
+        zIndex: 10,
+        whiteSpace: "nowrap",
+      }}>
+        ( THE WOLF AGE )
+      </div>
+    </section>
   );
 };
 
@@ -494,11 +624,11 @@ const ProjectRow = ({ project, index }) => {
 // Key fix: useTransform was called inside .map() — that violates Rules of Hooks.
 // Solution: extract each animated character into its own component so every
 // hook call is at the top level of a component, never inside a loop.
-const AnimatedChar = ({ char, index, centerIndex, scrollYProgress }) => {
+const AnimatedChar = React.memo(({ char, index, centerIndex, scrollYProgress }) => {
   const distanceFromCenter = index - centerIndex;
   const x = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 60, 0]);
   const rotateX = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 40, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.28], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [0.32, 0.4], [0, 1]);
   return (
     <motion.span
       style={{ x, rotateX, opacity, display: "inline-block", color: index < centerIndex ? "#E8F020" : "#fff" }}
@@ -506,7 +636,7 @@ const AnimatedChar = ({ char, index, centerIndex, scrollYProgress }) => {
       {char === " " ? "\u00A0" : char}
     </motion.span>
   );
-};
+});
 
 const Services = () => {
   const targetRef = useRef(null);
@@ -525,6 +655,7 @@ const Services = () => {
           textAlign: "center",
           letterSpacing: "-0.01em",
           perspective: "600px",
+          // display: "none",
         }}>
           {chars.map((char, index) => (
             <AnimatedChar
@@ -892,7 +1023,7 @@ const CrowdCanvas = () => {
     };
 
     const stage = { width: 0, height: 0 };
-    const TOTAL = 80;
+    const TOTAL = 40;
     const allPeeps = [];
     const available = [];
     const crowd = [];
@@ -1012,7 +1143,7 @@ const CrowdCanvas = () => {
         const drawW = (imgW / imgH) * drawH;
 
         // Depth-based opacity: farther peeps fade into darkness
-        ctx.globalAlpha = 0.3 + peep.depthRatio * 0.7;
+        ctx.globalAlpha = 0.5 + peep.depthRatio * 0.7;
 
         ctx.drawImage(peep.image, 0, -drawH, drawW, drawH);
         ctx.restore();
@@ -1142,6 +1273,8 @@ const SmoothScroll = () => {
       smoothTouch: false,
     });
 
+    lenis.on('scroll', ScrollTrigger.update);
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -1161,9 +1294,20 @@ export default function TheWolfAge() {
       <FontImport />
       <CustomCursor />
       <NoiseOverlay />
-      <Nav />
+      <PillNav
+        logo={wolfLogo}
+        logoAlt="TheWolfAge"
+        logoHref="#"
+        items={NAV_ITEMS}
+        baseColor="#000000"
+        pillColor="#E8F020"
+        pillTextColor="#080808"
+        hoveredPillTextColor="#E8F020"
+        initialLoadAnimation={false}
+      />
       <main>
         <Hero />
+        <HeroReveal />
         <Marquee />
         <Projects />
         <Services />
