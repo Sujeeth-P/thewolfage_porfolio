@@ -69,7 +69,7 @@ const PROJECTS = [
     id: 1,
     title: "CIPHER DASHBOARD",
     tags: ["React", "Node.js", "PostgreSQL"],
-    desc: "Real-time analytics platform processing 2M+ events/day with sub-50ms query latency.",
+    desc: "Real-time analytics at scale — 2M+ events processed daily, sub-50ms query latency. Built for teams that can't afford slow data.",
     year: "2024",
     color: "#E8F020",
   },
@@ -77,7 +77,7 @@ const PROJECTS = [
     id: 2,
     title: "LUNA ECOMMERCE",
     tags: ["Next.js", "Shopify API", "Tailwind"],
-    desc: "Headless storefront with 3D product viewer and AR try-on feature. 3× conversion uplift.",
+    desc: "Headless storefront with 3D product viewing and AR try-on. Conversion rate tripled in 60 days post-launch.",
     year: "2024",
     color: "#20F0D4",
   },
@@ -85,7 +85,7 @@ const PROJECTS = [
     id: 3,
     title: "WRAITH MOBILE",
     tags: ["React Native", "Firebase", "ML Kit"],
-    desc: "AI-powered fitness tracker with pose estimation and personalised workout generation.",
+    desc: "AI fitness companion with real-time pose estimation and adaptive workout generation. Zero compromise on native feel.",
     year: "2023",
     color: "#F020A0",
   },
@@ -93,7 +93,7 @@ const PROJECTS = [
     id: 4,
     title: "VAULT PROTOCOL",
     tags: ["Solidity", "Web3.js", "Hardhat"],
-    desc: "Smart-contract DeFi vault managing $4M TVL with automated yield optimisation.",
+    desc: "DeFi smart contract vault. $4M TVL. Automated yield optimization. Audited. Secure. Running in production.",
     year: "2023",
     color: "#20A0F0",
   },
@@ -101,19 +101,19 @@ const PROJECTS = [
     id: 5,
     title: "ECHO CMS",
     tags: ["TypeScript", "GraphQL", "Redis"],
-    desc: "Headless CMS used by 50+ media brands. Custom block editor with real-time collaboration.",
+    desc: "Headless content infrastructure powering 50+ media brands. Custom block editor with live multi-user collaboration.",
     year: "2023",
     color: "#F08020",
   },
 ];
 
 const SERVICES = [
-  { icon: "⬡", label: "Web Apps", desc: "Full-stack React & Node experiences built for speed and scale." },
-  { icon: "◈", label: "Mobile", desc: "Cross-platform React Native apps that feel genuinely native." },
-  { icon: "◉", label: "3D & Motion", desc: "Three.js scenes, scroll animations, immersive interactions." },
-  { icon: "◆", label: "Design Systems", desc: "Tokens, components, Figma-to-code pipelines." },
-  { icon: "◊", label: "Web3", desc: "Smart contracts, dApp frontends, wallet integrations." },
-  { icon: "○", label: "Consulting", desc: "Architecture reviews, performance audits, tech strategy." },
+  { icon: "⬡", label: "Web Applications", desc: "Full-stack products built on React and Node — fast, scalable, and production-ready from day one." },
+  { icon: "◈", label: "Mobile", desc: "React Native apps with genuine native performance. Cross-platform without compromise." },
+  { icon: "◉", label: "3D & Motion", desc: "Three.js environments, scroll-driven sequences, and micro-interactions that make interfaces unforgettable." },
+  { icon: "◆", label: "Design Systems", desc: "Token-based component libraries. Figma-to-code pipelines that eliminate the design-dev gap entirely." },
+  { icon: "◊", label: "Web3", desc: "Smart contracts, dApp frontends, wallet integrations. Built for the infrastructure shift, not the hype cycle." },
+  { icon: "○", label: "Strategy & Consulting", desc: "Architecture audits, technical roadmaps, and performance reviews for teams that need clarity before they build." },
 ];
 
 const STACK = ["React", "TypeScript", "Framer Motion", "Three.js", "Node.js", "PostgreSQL", "React Native", "Figma", "AWS"];
@@ -279,14 +279,14 @@ const Hero = () => {
             fontSize: "0.82rem", letterSpacing: "0.2em", textDecoration: "none",
             textTransform: "uppercase",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-          }}>See Work</a>
+          }}>View Our Work</a>
           <a href="#contact" data-hover style={{
             padding: "0.9rem 2.5rem", border: "1px solid rgba(232,240,32,0.3)",
             color: "#E8F020", fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 600, fontSize: "0.82rem", letterSpacing: "0.2em",
             textDecoration: "none", textTransform: "uppercase", background: "transparent",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-          }}>Let's Talk</a>
+          }}>Start a Project</a>
         </motion.div>
 
       </div>
@@ -296,11 +296,11 @@ const Hero = () => {
 
 // ─── HERO REVEAL ─────────────────────────────────────────────────────────────
 const heroRevealStatements = [
-  "We don't build websites.",
-  "We build predators.",
-  "Every brand has a nature.",
-  "We unleash it.",
-  "Welcome to The Wolf Age.",
+  "Most agencies build websites.",
+  "We build market presence.",
+  "Every brand has a potential.",
+  "We make it undeniable.",
+  "This is The Wolf Age.",
 ];
 
 const REVEAL_COLORS = ["#E8F020", "#ffffff", "#20F0D4", "#ffffff", "#E8F020"];
@@ -404,7 +404,7 @@ const HeroReveal = () => {
       </div>
 
       {/* Counter */}
-      <div
+      {/* <div
         ref={counterRef}
         style={{
           position: "absolute",
@@ -418,7 +418,7 @@ const HeroReveal = () => {
         }}
       >
         01 / 05
-      </div>
+      </div> */}
 
       {/* Vertical accent */}
       <div style={{
@@ -520,7 +520,7 @@ const Projects = () => {
         >
           <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1rem" }}>[ 01 ] Selected Work</p>
           <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(3.5rem, 7vw, 7rem)", color: "#fff", lineHeight: 0.9, margin: 0, letterSpacing: "-0.01em" }}>
-            PROJECTS<br /><span style={{ color: "#E8F020" }}>THAT BITE</span>
+            WORK THAT<br /><span style={{ color: "#E8F020" }}>MOVES MARKETS</span>
           </h2>
         </motion.div>
 
@@ -636,7 +636,7 @@ const Services = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollYProgress]);
 
-  const text = "WE BUILD DIGITAL WOLVES";
+  const text = "EVERY TOOL. ONE STANDARD.";
   const chars = text.split("");
   const centerIndex = Math.floor(chars.length / 2);
 
@@ -665,7 +665,7 @@ const Services = () => {
       </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 2.5rem" }}>
-        <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "3rem" }}>[ 02 ] Services</p>
+        <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "3rem" }}>[ 02 ] What We Build</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.05)" }}>
           {SERVICES.map((service, i) => (
             <ServiceCard key={i} service={service} index={i} />
@@ -836,59 +836,315 @@ const StackTicker = () => {
   );
 };
 
-// ─── STICKY CARDS (Skiper17 adapted) ─────────────────────────────────────────
+// ─── STICKY CARDS — Premium Pinned Scroll ────────────────────────────────────
 const StickyCards = () => {
-  const container = useRef(null);
-  const [activeIdx, setActiveIdx] = useState(0);
+  const containerRef = useRef(null);
+  const stageRefs = useRef([]);
+  const labelRefs = useRef([]);
+  const tickerRefs = useRef([]);
+  const progressFillRef = useRef(null);
+  const counterRef = useRef(null);
+
   const items = [
-    { label: "01 — DISCOVER", text: "We audit your digital landscape. Competitive positioning, technical debt, conversion blockers. No fluff—pure signal.", icon: "◉" },
-    { label: "02 — ARCHITECT", text: "System design, UX blueprints, technical roadmap. We align on the vision before a single pixel or line of code.", icon: "◈" },
-    { label: "03 — BUILD", text: "Sprint-based delivery with weekly demos. Clean code, pixel-perfect design, performance-first mentality.", icon: "⬡" },
-    { label: "04 — SHIP & SCALE", text: "Zero-downtime deploy, monitoring, iterative growth loops. We stay with you post-launch.", icon: "◆" },
+    {
+      step: "01", title: "DISCOVER",
+      text: "We map your competitive landscape, surface technical debt, and identify exactly where you're losing users. Signal only. No filler.",
+      icon: "◉", tags: ["Research", "Audit", "Strategy"],
+    },
+    {
+      step: "02", title: "ARCHITECT",
+      text: "System design, UX blueprints, and a technical roadmap your team can actually follow. We align before a single line is written.",
+      icon: "◈", tags: ["Design Systems", "UX", "Blueprint"],
+    },
+    {
+      step: "03", title: "BUILD",
+      text: "Sprint-based delivery with weekly demos. Clean code. Pixel-perfect execution. Performance reviewed at every stage.",
+      icon: "⬡", tags: ["Engineering", "QA", "Delivery"],
+    },
+    {
+      step: "04", title: "SHIP & SCALE",
+      text: "Zero-downtime deployment, monitoring setup, and ongoing iteration cycles. We don't disappear at launch.",
+      icon: "◆", tags: ["Deploy", "Monitor", "Iterate"],
+    },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const total = items.length;
+
+      // GSAP owns all transforms from the start — set initial states imperatively
+      stageRefs.current.forEach((el, i) => {
+        if (!el) return;
+        gsap.set(el, {
+          opacity: i === 0 ? 1 : 0,
+          y: i === 0 ? 0 : 44,
+          filter: i === 0 ? "blur(0px)" : "blur(14px)",
+        });
+      });
+      labelRefs.current.forEach((el, i) => {
+        if (!el) return;
+        gsap.set(el, { x: i === 0 ? 10 : 0 });
+      });
+      tickerRefs.current.forEach((el, i) => {
+        if (!el) return;
+        gsap.set(el, { scaleY: i === 0 ? 1 : 0, opacity: i === 0 ? 1 : 0 });
+      });
+
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: `+=${total * 100}%`,
+        pin: true,
+        scrub: 1.5,
+        onUpdate(self) {
+          const raw = self.progress * total;
+          const idx = Math.min(Math.floor(raw), total - 1);
+
+          // Progress bar (no tween — instant with scroll)
+          if (progressFillRef.current) {
+            progressFillRef.current.style.width = `${self.progress * 100}%`;
+          }
+          // Counter
+          if (counterRef.current) {
+            counterRef.current.textContent =
+              `${String(idx + 1).padStart(2, "0")} — ${String(total).padStart(2, "0")}`;
+          }
+
+          // Content panels: fade + slide + blur
+          stageRefs.current.forEach((el, i) => {
+            if (!el) return;
+            if (i === idx) {
+              gsap.to(el, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.65, ease: "power3.out", overwrite: "auto" });
+            } else {
+              const dir = i < idx ? -1 : 1;
+              gsap.to(el, { opacity: 0, y: dir * 44, filter: "blur(14px)", duration: 0.65, ease: "power3.out", overwrite: "auto" });
+            }
+          });
+
+          // Nav labels: color + subtle slide
+          labelRefs.current.forEach((el, i) => {
+            if (!el) return;
+            if (i === idx) {
+              gsap.to(el, { color: "#E8F020", x: 10, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            } else if (i < idx) {
+              gsap.to(el, { color: "rgba(232,240,32,0.18)", x: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            } else {
+              gsap.to(el, { color: "#282828", x: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            }
+          });
+
+          // Vertical accent bars: scale + fade
+          tickerRefs.current.forEach((el, i) => {
+            if (!el) return;
+            if (i === idx) {
+              gsap.to(el, { scaleY: 1, opacity: 1, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            } else if (i < idx) {
+              gsap.to(el, { scaleY: 1, opacity: 0.22, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            } else {
+              gsap.to(el, { scaleY: 0, opacity: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+            }
+          });
+        },
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section style={{ background: "#0a0a0a", padding: "8rem 2.5rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1rem" }}>[ 04 ] Process</p>
-        <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(3rem, 6vw, 6rem)", color: "#fff", lineHeight: 0.9, margin: "0 0 5rem", letterSpacing: "-0.01em" }}>
-          HOW WE<br /><span style={{ color: "#E8F020" }}>HUNT</span>
-        </h2>
-        <div ref={container} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", alignItems: "start" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    <section
+      ref={containerRef}
+      style={{
+        height: "100vh",
+        background: "#080808",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {/* Background grid */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage:
+          "linear-gradient(rgba(232,240,32,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(232,240,32,0.02) 1px, transparent 1px)",
+        backgroundSize: "80px 80px",
+      }} />
+
+      {/* Ambient glow centered on right panel */}
+      <div style={{
+        position: "absolute",
+        top: "50%", left: "66%",
+        transform: "translate(-50%, -50%)",
+        width: "55vw", height: "55vw",
+        background: "radial-gradient(ellipse, rgba(232,240,32,0.045) 0%, transparent 68%)",
+        borderRadius: "50%",
+        pointerEvents: "none",
+      }} />
+
+      {/* Thin progress bar — bottom edge */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0,
+        height: "1px", background: "rgba(232,240,32,0.07)",
+        zIndex: 10,
+      }}>
+        <div
+          ref={progressFillRef}
+          style={{ height: "100%", width: "0%", background: "#E8F020" }}
+        />
+      </div>
+
+      {/* Stage counter */}
+      <div style={{
+        position: "absolute", bottom: "2.5rem", right: "2.5rem",
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: "0.65rem", letterSpacing: "0.32em",
+        color: "rgba(232,240,32,0.3)", zIndex: 10,
+      }}>
+        <span ref={counterRef}>01 — 04</span>
+      </div>
+
+      {/* ─── Two-column grid ─── */}
+      <div style={{
+        maxWidth: "1280px",
+        margin: "0 auto",
+        padding: "0 2.5rem",
+        width: "100%",
+        display: "grid",
+        gridTemplateColumns: "minmax(240px, 1fr) 1.65fr",
+        gap: "clamp(3rem, 6vw, 7rem)",
+        alignItems: "center",
+        position: "relative",
+        zIndex: 2,
+      }}>
+
+        {/* ─── LEFT: Label + Title + Nav ─── */}
+        <div>
+          <p style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            color: "#E8F020", fontSize: "0.68rem",
+            letterSpacing: "0.35em", textTransform: "uppercase",
+            margin: "0 0 1.2rem",
+          }}>[ 04 ] Process</p>
+
+          <h2 style={{
+            fontFamily: "'Bebas Neue', 'Anton', sans-serif",
+            fontSize: "clamp(2.8rem, 4.5vw, 5.5rem)",
+            color: "#fff", lineHeight: 0.88,
+            margin: "0 0 clamp(2.5rem, 4vh, 4rem)",
+            letterSpacing: "-0.01em",
+          }}>
+            FROM BRIEF<br />
+            <span style={{ color: "#E8F020" }}>TO SHIPPED</span>
+          </h2>
+
+          {/* Stage nav */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
             {items.map((item, i) => (
-              <motion.div
+              <div
                 key={i}
-                data-hover
-                onClick={() => setActiveIdx(i)}
-                whileHover={{ paddingLeft: "2rem" }}
                 style={{
-                  padding: "2rem",
-                  paddingLeft: activeIdx === i ? "2rem" : "1.5rem",
-                  cursor: "pointer",
-                  borderLeft: activeIdx === i ? "3px solid #E8F020" : "3px solid transparent",
-                  background: activeIdx === i ? "rgba(232,240,32,0.04)" : "transparent",
-                  transition: "all 0.3s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1.25rem",
+                  padding: "1rem 0",
+                  borderTop: "1px solid rgba(255,255,255,0.035)",
+                  overflow: "hidden",
                 }}
               >
-                <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: activeIdx === i ? "#E8F020" : "#555", fontSize: "0.75rem", letterSpacing: "0.2em", margin: "0 0 0.5rem" }}>{item.label}</p>
-              </motion.div>
+                {/* Vertical accent bar */}
+                <div
+                  ref={el => { tickerRefs.current[i] = el; }}
+                  style={{
+                    width: "2px",
+                    height: "2rem",
+                    background: "#E8F020",
+                    flexShrink: 0,
+                    transformOrigin: "top center",
+                  }}
+                />
+                <p
+                  ref={el => { labelRefs.current[i] = el; }}
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "clamp(0.68rem, 1.05vw, 0.8rem)",
+                    letterSpacing: "0.16em",
+                    margin: 0,
+                    textTransform: "uppercase",
+                    color: i === 0 ? "#E8F020" : "#282828",
+                  }}
+                >
+                  {item.step} — {item.title}
+                </p>
+              </div>
             ))}
           </div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIdx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-              style={{ padding: "3rem", border: "1px solid rgba(232,240,32,0.1)", background: "rgba(232,240,32,0.02)" }}
+        </div>
+
+        {/* ─── RIGHT: Stage content panels (absolutely stacked) ─── */}
+        <div style={{ position: "relative", height: "clamp(300px, 42vh, 460px)" }}>
+          {items.map((item, i) => (
+            <div
+              key={i}
+              ref={el => { stageRefs.current[i] = el; }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                padding: "clamp(1.8rem, 3vw, 3rem)",
+                border: "1px solid rgba(232,240,32,0.07)",
+                background: "rgba(8,8,8,0.8)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                opacity: i === 0 ? 1 : 0,
+              }}
             >
-              <div style={{ fontSize: "3rem", color: "#E8F020", marginBottom: "1.5rem" }}>{items[activeIdx].icon}</div>
-              <h3 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "2.5rem", color: "#fff", margin: "0 0 1rem" }}>{items[activeIdx].label.split("—")[1].trim()}</h3>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#777", lineHeight: 1.7, fontSize: "1rem", margin: 0 }}>{items[activeIdx].text}</p>
-            </motion.div>
-          </AnimatePresence>
+              {/* Icon + ghost step number */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <span style={{ fontSize: "2rem", color: "#E8F020", lineHeight: 1 }}>{item.icon}</span>
+                <span style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "clamp(4.5rem, 9vw, 9rem)",
+                  color: "rgba(232,240,32,0.05)",
+                  lineHeight: 1, userSelect: "none",
+                }}>{item.step}</span>
+              </div>
+
+              {/* Stage title */}
+              <h3 style={{
+                fontFamily: "'Bebas Neue', 'Anton', sans-serif",
+                fontSize: "clamp(2rem, 3.5vw, 3.2rem)",
+                color: "#fff",
+                margin: "0.6rem 0",
+                letterSpacing: "0.02em",
+                lineHeight: 1,
+              }}>{item.title}</h3>
+
+              {/* Body text */}
+              <p style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                color: "#555",
+                lineHeight: 1.78,
+                fontSize: "clamp(0.82rem, 1.25vw, 0.97rem)",
+                margin: "0 0 1.5rem",
+                flexGrow: 1,
+              }}>{item.text}</p>
+
+              {/* Tag pills */}
+              <div style={{ display: "flex", gap: "0.45rem", flexWrap: "wrap" }}>
+                {item.tags.map((tag, j) => (
+                  <span key={j} style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "0.58rem",
+                    letterSpacing: "0.22em",
+                    color: "rgba(232,240,32,0.38)",
+                    border: "1px solid rgba(232,240,32,0.11)",
+                    padding: "0.26rem 0.62rem",
+                    textTransform: "uppercase",
+                  }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -897,7 +1153,7 @@ const StickyCards = () => {
 
 // ─── ABOUT / MANIFESTO ────────────────────────────────────────────────────────
 const About = () => {
-  const words = "WOLVES DON'T LOSE SLEEP OVER THE OPINIONS OF SHEEP. WE BUILD DIGITAL EXPERIENCES THAT LEAD THE PACK.".split(" ");
+  const words = "WE DON'T BUILD FOR MEDIOCRITY. THE BRANDS THAT LEAD DON'T SETTLE FOR AVERAGE DIGITAL. NEITHER DO WE.".split(" ");
   return (
     <section style={{ background: "#E8F020", padding: "8rem 2.5rem" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
@@ -926,7 +1182,7 @@ const About = () => {
           transition={{ delay: 0.5 }}
           style={{ marginTop: "4rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}
         >
-          {[["18+", "Projects Delivered"], ["5+", "Years in the Wild"], ["3×", "Avg. Client ROI"], ["100%", "Pack Loyalty"]].map(([num, label], i) => (
+          {[["18+", "Products Delivered"], ["5+", "Years of Craft"], ["3×", "Average Client ROI"], ["100%", "Founder-Led Studio"]].map(([num, label], i) => (
             <div key={i}>
               <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "4rem", color: "#080808", margin: 0, lineHeight: 1 }}>{num}</p>
               <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.9rem", color: "#333", margin: 0, letterSpacing: "0.1em" }}>{label}</p>
@@ -952,12 +1208,12 @@ const Contact = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1.5rem" }}>[ 05 ] Contact</p>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1.5rem" }}>[ 05 ] Let's Build</p>
           <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(4rem, 10vw, 10rem)", color: "#fff", lineHeight: 0.88, margin: "0 0 3rem", letterSpacing: "-0.02em" }}>
-            JOIN THE<br /><span style={{ color: "#E8F020" }}>PACK</span>
+            YOUR NEXT<br /><span style={{ color: "#E8F020" }}>PROJECT STARTS HERE.</span>
           </h2>
           <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#666", fontSize: "1.1rem", lineHeight: 1.7, maxWidth: "500px", marginBottom: "3rem" }}>
-            Ready to build something that the competition can't ignore? Let's talk about your next project.
+            Tell us what you're working on. We'll tell you exactly how we can make it exceptional.
           </p>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <a href="mailto:hello@thewolfage.com" data-hover style={{
@@ -1250,7 +1506,7 @@ const CrowdSection = () => (
     <div style={{ textAlign: "center", paddingTop: "5rem", position: "relative", zIndex: 3 }}>
       <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.72rem", letterSpacing: "0.38em", textTransform: "uppercase", marginBottom: "0.6rem" }}>[ 06 ] The Pack</p>
       <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(2.8rem, 6vw, 6rem)", color: "#fff", margin: 0, lineHeight: 0.9 }}>
-        WE MOVE<br /><span style={{ color: "#E8F020" }}>TOGETHER</span>
+        WE MOVE<br /><span style={{ color: "#E8F020" }}>AS ONE</span>
       </h2>
     </div>
     {/* Crowd canvas — anchored to the bottom of the section */}
@@ -1270,7 +1526,7 @@ const Footer = () => (
   <footer style={{ background: "#050505", borderTop: "1px solid rgba(232,240,32,0.08)", padding: "2rem 2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
       <WolfLogo size={24} />
-      <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#333", fontSize: "0.75rem", letterSpacing: "0.15em" }}>© 2025 THEWOLFAGE. ALL RIGHTS RESERVED.</span>
+      <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#333", fontSize: "0.75rem", letterSpacing: "0.15em" }}>© 2026 The Wolf Age. All Rights Reserved.</span>
     </div>
     <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#333", fontSize: "0.75rem", letterSpacing: "0.1em" }}>BUILT WITH REACT + FRAMER MOTION</span>
   </footer>
