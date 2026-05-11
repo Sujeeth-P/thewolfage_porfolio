@@ -1016,32 +1016,41 @@ const CrowdCanvas = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Cap DPR to 2 to prevent excessive pixel pushing on high-density displays
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
     // ── Pre-process peep images: invert for dark theme ─────────────────────
-    // Original PNGs are black line-art on transparent bg — invisible on #080808.
-    // We invert them to white line-art so they pop on the dark background.
     const processedImages = [];
     let loadedCount = 0;
 
     const invertImage = (img) => {
       const offscreen = document.createElement("canvas");
-      offscreen.width = img.naturalWidth;
-      offscreen.height = img.naturalHeight;
+      // Scale down large images to max 800px height for performance
+      const MAX_H = 800;
+      const scale = img.naturalHeight > MAX_H ? MAX_H / img.naturalHeight : 1;
+      const w = img.naturalWidth * scale;
+      const h = img.naturalHeight * scale;
+      
+      offscreen.width = w;
+      offscreen.height = h;
       const offCtx = offscreen.getContext("2d");
       offCtx.filter = "invert(1)";
-      offCtx.drawImage(img, 0, 0);
+      offCtx.drawImage(img, 0, 0, w, h);
       return offscreen;
     };
 
     const stage = { width: 0, height: 0 };
-    const TOTAL = 40;
+    const TOTAL = 30; // Reduced from 40 for better performance
     const allPeeps = [];
     const available = [];
     const crowd = [];
+    let isVisible = false;
+    let observer;
 
     // ── Peep factory ───────────────────────────────────────────────────────
     const createPeep = (id, image) => ({
       id,
-      image,       // pre-inverted offscreen canvas
+      image,
       x: 0,
       y: 0,
       anchorY: 0,
@@ -1052,21 +1061,13 @@ const CrowdCanvas = () => {
     });
 
     // ── Reset peep to off-screen edge ──────────────────────────────────────
-    // Head-safe positioning: startY is derived from the peep's own rendered
-    // height so the head NEVER clips above the canvas top.
-    //   • drawH * peepScale = actual rendered height in world-space pixels
-    //   • Back-row (depthRatio≈0): small, feet near canvas bottom → ~full body visible
-    //   • Front-row (depthRatio≈1): large, feet pushed well below canvas → head/torso only
     const resetPeep = (peep) => {
       const direction = Math.random() > 0.5 ? 1 : -1;
       const depthRatio = Math.random();
       const figW = 200;
-      const peepScale = 0.6 + depthRatio * 0.9; // 0.6 → 1.5
+      const peepScale = 0.6 + depthRatio * 0.9;
       const renderedH = 500 * peepScale;
 
-      // Head stays at least 10px inside the canvas top edge.
-      // Back-row: extra push so feet reach the bottom of the canvas.
-      // Front-row: no extra push — feet extend far below canvas.
       const startY = renderedH + 30 + (1 - depthRatio) * 50;
       let startX, endX;
 
@@ -1089,14 +1090,13 @@ const CrowdCanvas = () => {
       return { startX, startY, endX };
     };
 
-    // ── Walk animation (Skiper39 normalWalk) ───────────────────────────────
+    // ── Walk animation ─────────────────────────────────────────────────────
     const normalWalk = (peep, props) => {
       const { startY, endX } = props;
       const xDuration = 10;
       const yDuration = 0.25;
 
       const tl = gsap.timeline();
-      // Front-row peeps walk slower → parallax depth illusion
       const speed = 0.4 + (1 - peep.depthRatio) * 0.8;
       tl.timeScale(speed);
       tl.to(peep, { duration: xDuration, x: endX, ease: "none" }, 0);
@@ -1118,6 +1118,10 @@ const CrowdCanvas = () => {
 
       const props = resetPeep(peep);
       const walk = normalWalk(peep, props);
+      
+      // Pause immediately if not visible
+      if (!isVisible) walk.pause();
+
       walk.eventCallback("onComplete", () => {
         removePeepFromCrowd(peep);
         addPeepToCrowd();
@@ -1136,11 +1140,11 @@ const CrowdCanvas = () => {
       available.push(peep);
     };
 
-    // ── Render loop (GSAP ticker) ──────────────────────────────────────────
+    // ── Render loop ────────────────────────────────────────────────────────
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
-      ctx.scale(devicePixelRatio, devicePixelRatio);
+      ctx.scale(dpr, dpr);
 
       crowd.forEach((peep) => {
         ctx.save();
@@ -1152,9 +1156,7 @@ const CrowdCanvas = () => {
         const drawH = 500;
         const drawW = (imgW / imgH) * drawH;
 
-        // Depth-based opacity: farther peeps fade into darkness
         ctx.globalAlpha = 0.5 + peep.depthRatio * 0.7;
-
         ctx.drawImage(peep.image, 0, -drawH, drawW, drawH);
         ctx.restore();
       });
@@ -1166,8 +1168,8 @@ const CrowdCanvas = () => {
     const resize = () => {
       stage.width = canvas.clientWidth || canvas.parentElement?.clientWidth || window.innerWidth;
       stage.height = canvas.clientHeight || canvas.parentElement?.clientHeight || 500;
-      canvas.width = stage.width * devicePixelRatio;
-      canvas.height = stage.height * devicePixelRatio;
+      canvas.width = stage.width * dpr;
+      canvas.height = stage.height * dpr;
 
       crowd.forEach((p) => { if (p.walk) p.walk.kill(); });
       crowd.length = 0;
@@ -1176,17 +1178,32 @@ const CrowdCanvas = () => {
 
       while (available.length) {
         const peep = addPeepToCrowd();
-        if (peep && peep.walk) peep.walk.progress(Math.random());
+        if (peep && peep.walk) {
+          peep.walk.progress(Math.random());
+          if (!isVisible) peep.walk.pause();
+        }
       }
     };
 
-    // ── Boot: load → invert → init ─────────────────────────────────────────
+    // ── Boot ───────────────────────────────────────────────────────────────
     const boot = () => {
       for (let i = 0; i < TOTAL; i++) {
         allPeeps.push(createPeep(i, processedImages[i % processedImages.length]));
       }
       resize();
-      gsap.ticker.add(render);
+
+      observer = new IntersectionObserver((entries) => {
+        isVisible = entries[0].isIntersecting;
+        if (isVisible) {
+          gsap.ticker.add(render);
+          crowd.forEach(p => p.walk && p.walk.play());
+        } else {
+          gsap.ticker.remove(render);
+          crowd.forEach(p => p.walk && p.walk.pause());
+        }
+      });
+      observer.observe(canvas);
+
       window.addEventListener("resize", resize);
     };
 
@@ -1205,6 +1222,7 @@ const CrowdCanvas = () => {
     });
 
     return () => {
+      if (observer) observer.disconnect();
       window.removeEventListener("resize", resize);
       gsap.ticker.remove(render);
       crowd.forEach((p) => { if (p.walk) p.walk.kill(); });
