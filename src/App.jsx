@@ -5,6 +5,8 @@ import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PillNav from './components/PillNav';
+import Modal from './components/Modal';
+import ThankYou from './components/ThankYou';
 import wolfLogo from './assets/wolf.png';
 import endwolfImg from './assets/endwolf.png';
 import peep1 from "./assets/peep/peep-standing-1.png";
@@ -46,21 +48,12 @@ const PEEP_SRCS = [
 gsap.registerPlugin(ScrollTrigger);
 // ─── WOLF SVG LOGO ────────────────────────────────────────────────────────────
 const WolfLogo = ({ size = 48, className = "" }) => (
-  <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    {/* Wolf head silhouette */}
-    <path d="M15 85 L20 55 L10 30 L25 40 L30 20 L40 45 L50 38 L60 45 L70 20 L75 40 L90 30 L80 55 L85 85 L65 75 L60 90 L50 78 L40 90 L35 75 Z" fill="#E8F020" />
-    <path d="M30 20 L25 5 L38 28 Z" fill="#E8F020" />
-    <path d="M70 20 L75 5 L62 28 Z" fill="#E8F020" />
-    {/* Eyes */}
-    <ellipse cx="38" cy="52" rx="4" ry="5" fill="#0a0a0a" />
-    <ellipse cx="62" cy="52" rx="4" ry="5" fill="#0a0a0a" />
-    <circle cx="37" cy="51" r="1.5" fill="#E8F020" />
-    <circle cx="61" cy="51" r="1.5" fill="#E8F020" />
-    {/* Nose */}
-    <ellipse cx="50" cy="63" rx="5" ry="3.5" fill="#0a0a0a" />
-    {/* Mouth */}
-    <path d="M45 66 Q50 72 55 66" stroke="#0a0a0a" strokeWidth="1.5" fill="none" />
-  </svg>
+  <img 
+    src={endwolfImg} 
+    alt="Wolf Logo" 
+    style={{ width: size, height: size, objectFit: "contain", display: "block" }} 
+    className={className} 
+  />
 );
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
@@ -109,14 +102,25 @@ const PROJECTS = [
 
 const SERVICES = [
   { icon: "⬡", label: "Web Applications", desc: "Full-stack products built on React and Node — fast, scalable, and production-ready from day one." },
-  { icon: "◈", label: "Mobile", desc: "React Native apps with genuine native performance. Cross-platform without compromise." },
-  { icon: "◉", label: "3D & Motion", desc: "Three.js environments, scroll-driven sequences, and micro-interactions that make interfaces unforgettable." },
-  { icon: "◆", label: "Design Systems", desc: "Token-based component libraries. Figma-to-code pipelines that eliminate the design-dev gap entirely." },
-  { icon: "◊", label: "Web3", desc: "Smart contracts, dApp frontends, wallet integrations. Built for the infrastructure shift, not the hype cycle." },
+  { icon: "◈", label: "Mobile Applications", desc: "React Native apps with genuine native performance. Cross-platform without compromise." },
+  {
+  icon: "⬣",
+  label: "ERP Solutions",
+  desc: "Custom ERP platforms for managing operations, billing, inventory, employees, customer workflows, and business automation in one unified system."
+}, 
+  {
+    icon: "⬢",
+    label: "Personal Branding",
+    desc: "Strategic personal branding shoots with content planning, storytelling direction, and audience-focused visuals."
+  },
+
+  {
+    icon: "✧",
+    label: "Product Shoots",
+    desc: "Professional product photography with color correction, composition styling, and clean commercial presentation."
+  },
   { icon: "○", label: "Strategy & Consulting", desc: "Architecture audits, technical roadmaps, and performance reviews for teams that need clarity before they build." },
 ];
-
-const STACK = ["React", "TypeScript", "Framer Motion", "Three.js", "Node.js", "PostgreSQL", "React Native", "Figma", "AWS"];
 
 // ─── MOBILE HOOK ──────────────────────────────────────────────────────────────
 const useIsMobile = () => {
@@ -173,12 +177,14 @@ const NoiseOverlay = () => (
 const NAV_ITEMS = [
   { label: 'Work', href: '#work' },
   { label: 'Services', href: '#services' },
-  { label: 'Stack', href: '#stack' },
+  // { label: 'Clients', href: '#clients' },
+  { label: 'Process', href: '#process' },
+
   { label: 'Contact', href: '#contact' },
 ];
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
-const Hero = () => {
+const Hero = ({ openModal }) => {
   const isMobile = useIsMobile();
   const targetRef = useRef(null);
 
@@ -249,19 +255,22 @@ const Hero = () => {
         </motion.div>
 
         {/* THE WOLF AGE — fades in + rises from below as user scrolls */}
-        <motion.div style={{ opacity: textOpacity, y: textY, position: "relative", zIndex: 2 }}>
+        <motion.div style={{
+          opacity: textOpacity, y: textY, position: "relative", zIndex: 2,
+          padding: isMobile ? "0 1.5rem" : "0",
+          width: "100%",
+        }}>
           <h1 style={{
             fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-            fontSize: "clamp(5rem, 12.5vw, 13rem)",
+            fontSize: isMobile ? "clamp(3.2rem, 13vw, 5rem)" : "clamp(5rem, 12.5vw, 13rem)",
             color: "#E8F020",
             lineHeight: "88%",
-            // letterSpacing: "0.06em",
-            letterSpacing: "1%",
+            letterSpacing: "0.02em",
             textAlign: "center",
             margin: 0,
           }}>
-            THE 
-            <span style={{ color: "#fff", WebkitTextStroke: "2px #E8F020" }}>WOLF</span> 
+            THE
+            <span style={{ color: "#fff", WebkitTextStroke: "2px #E8F020" }}>WOLF</span>
              AGE
           </h1>
         </motion.div>
@@ -271,10 +280,11 @@ const Hero = () => {
           opacity: taglineOpacity, y: taglineY,
           fontFamily: "'Space Grotesk', sans-serif",
           color: "#555", fontSize: "0.92rem",
-          letterSpacing: "0.34em", marginTop: "2.2rem",
+          textAlign: isMobile ? "center" : "center",
+          letterSpacing: "0.34em", marginTop: isMobile ? "1.5rem" : "2.2rem",
           textTransform: "uppercase",
-          // paddingTop: "28rem",
-          paddingTop: "28%",
+          paddingTop: isMobile ? "10%" : "28%",
+          paddingBottom: isMobile ? "44%" : "0",
           position: "relative", zIndex: 2,
         }}>
           Digital Craft · Fearless Execution
@@ -287,10 +297,10 @@ const Hero = () => {
           flexDirection: isMobile ? "column" : "row",
           alignItems: "center",
           justifyContent: "center",
-          marginTop: "2.6rem", gap: "1rem",
+          marginTop: isMobile ? "45 %" : "2.6rem", gap: "1rem",
           position: "relative", zIndex: 2,
-          padding: isMobile ? "0 1.5rem" : "0",
-          width: isMobile ? "100%" : "auto",
+          padding: isMobile ? "0 1.15rem" : "0",
+          width: isMobile ? "90%" : "auto",
         }}>
           <a href="#work" data-hover style={{
             padding: "0.9rem 2.5rem", background: "#E8F020", color: "#080808",
@@ -300,14 +310,15 @@ const Hero = () => {
             width: isMobile ? "100%" : "auto",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
           }}>View Our Work</a>
-          <a href="#contact" data-hover style={{
+          <button onClick={openModal} data-hover style={{
             padding: "0.9rem 2.5rem", border: "1px solid rgba(232,240,32,0.3)",
             color: "#E8F020", fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 600, fontSize: "0.82rem", letterSpacing: "0.2em",
-            textDecoration: "none", textTransform: "uppercase", background: "transparent",
+            textTransform: "uppercase", background: "transparent",
             textAlign: "center", width: isMobile ? "100%" : "auto",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-          }}>Start a Project</a>
+            cursor: "none",
+          }}>Start a Project</button>
         </motion.div>
 
       </div>
@@ -495,8 +506,24 @@ const HeroReveal = () => {
 
 // ─── MARQUEE ──────────────────────────────────────────────────────────────────
 const Marquee = () => {
-  const items = ["REACT", "◆", "TYPESCRIPT", "◆", "THREE.JS", "◆", "FRAMER", "◆", "NODE.JS", "◆", "WEB3", "◆", "REACT NATIVE", "◆", "FIGMA", "◆"];
-  return (
+const items = [
+  "DIGITAL EXPERIENCES",
+  "◆",
+  "FEARLESS DESIGN",
+  "◆",
+  "MODERN DEVELOPMENT",
+  "◆",
+  "CINEMATIC WEBSITES",
+  "◆",
+  "PERFORMANCE SYSTEMS",
+  "◆",
+  "BRAND IDENTITY",
+  "◆",
+  "AI SOLUTIONS",
+  "◆",
+  "SCALABLE PRODUCTS",
+  "◆",
+];  return (
     <div style={{ background: "#E8F020", overflow: "hidden", padding: "0.8rem 0", borderTop: "1px solid rgba(0,0,0,0.1)", borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
       <motion.div
         animate={{ x: ["0%", "-50%"] }}
@@ -853,41 +880,6 @@ const ParallaxSection = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-// ─── STACK TICKER ─────────────────────────────────────────────────────────────
-const StackTicker = () => {
-  return (
-    <section style={{ background: "#080808", padding: "6rem 2.5rem 4rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-          {STACK.map((tech, i) => (
-            <motion.div
-              key={tech}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              whileHover={{ scale: 1.08, background: "rgba(232,240,32,0.12)" }}
-              data-hover
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: "0.9rem",
-                fontWeight: 600,
-                color: "#E8F020",
-                padding: "0.7rem 1.4rem",
-                border: "1px solid rgba(232,240,32,0.2)",
-                letterSpacing: "0.1em",
-                cursor: "default",
-                transition: "background 0.3s",
-                clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
-              }}
-            >{tech}</motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 };
 
@@ -1302,7 +1294,7 @@ const About = () => {
 };
 
 // ─── CONTACT ──────────────────────────────────────────────────────────────────
-const Contact = () => {
+const Contact = ({ openModal }) => {
   const isMobile = useIsMobile();
   return (
     <section id="contact" style={{ background: "#080808", padding: isMobile ? "5rem 1.25rem 4rem" : "10rem 2.5rem 8rem", position: "relative", overflow: "hidden" }}>
@@ -1324,6 +1316,20 @@ const Contact = () => {
             Tell us what you're working on. We'll tell you exactly how we can make it exceptional.
           </p>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            <button onClick={openModal} data-hover style={{
+              padding: "1.1rem 3rem",
+              background: "#E8F020",
+              color: "#080808",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: isMobile ? "0.8rem" : "0.9rem",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
+              border: "none",
+              cursor: "none",
+              width: isMobile ? "100%" : "auto",
+            }}>Book a Consultation</button>
             <a href="mailto:hello@thewolfage.com" data-hover style={{
               padding: "1.1rem 3rem",
               background: "#E8F020",
@@ -1687,6 +1693,14 @@ const SmoothScroll = () => {
 
 // ─── APP ──────────────────────────────────────────────────────────────────────
 export default function TheWolfAge() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const openModal = () => setModalOpen(true)
+  const closeModal = () => setModalOpen(false)
+  const handleSubmit = () => { setModalOpen(false); setSubmitted(true) }
+  const handleReturn = () => setSubmitted(false)
+
   return (
     <>
       <SmoothScroll />
@@ -1705,19 +1719,27 @@ export default function TheWolfAge() {
         initialLoadAnimation={false}
       />
       <main>
-        <Hero />
+        <Hero openModal={openModal} />
         <HeroReveal />
         <Marquee />
         <Projects />
         <Services />
         <ParallaxSection />
-        <StackTicker />
+
         <StickyCards />
         <About />
         <CrowdSection />
-        <Contact />
+        <Contact openModal={openModal} />
       </main>
       <Footer />
+
+      <Modal isOpen={modalOpen} onClose={closeModal} onSubmit={handleSubmit} />
+
+      {submitted && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000 }}>
+          <ThankYou onReturn={handleReturn} />
+        </div>
+      )}
     </>
   );
 }
