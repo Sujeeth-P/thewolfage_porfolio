@@ -1,0 +1,42 @@
+export const PROJECTS = [
+  {
+    id: 1,
+    title: 'CIPHER DASHBOARD',
+    tags: ['React', 'Node.js', 'PostgreSQL'],
+    desc: "Real-time analytics at scale — 2M+ events processed daily, sub-50ms query latency. Built for teams that can't afford slow data.",
+    year: '2024',
+    color: '#E8F020',
+  },
+  {
+    id: 2,
+    title: 'LUNA ECOMMERCE',
+    tags: ['Next.js', 'Shopify API', 'Tailwind'],
+    desc: 'Headless storefront with 3D product viewing and AR try-on. Conversion rate tripled in 60 days post-launch.',
+    year: '2024',
+    color: '#20F0D4',
+  },
+  {
+    id: 3,
+    title: 'WRAITH MOBILE',
+    tags: ['React Native', 'Firebase', 'ML Kit'],
+    desc: 'AI fitness companion with real-time pose estimation and adaptive workout generation. Zero compromise on native feel.',
+    year: '2023',
+    color: '#F020A0',
+  },
+  {
+    id: 4,
+    title: 'VAULT PROTOCOL',
+    tags: ['Solidity', 'Web3.js', 'Hardhat'],
+    desc: 'DeFi smart contract vault. $4M TVL. Automated yield optimization. Audited. Secure. Running in production.',
+    year: '2023',
+    color: '#20A0F0',
+  },
+  {
+    id: 5,
+    title: 'ECHO CMS',
+    tags: ['TypeScript', 'GraphQL', 'Redis'],
+    desc: 'Headless content infrastructure powering 50+ media brands. Custom block editor with live multi-user collaboration.',
+    year: '2023',
+    color: '#F08020',
+  },
+];
