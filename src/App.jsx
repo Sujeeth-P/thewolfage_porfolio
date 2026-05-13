@@ -118,8 +118,20 @@ const SERVICES = [
 
 const STACK = ["React", "TypeScript", "Framer Motion", "Three.js", "Node.js", "PostgreSQL", "React Native", "Figma", "AWS"];
 
+// ─── MOBILE HOOK ──────────────────────────────────────────────────────────────
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler, { passive: true });
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isMobile;
+};
+
 // ─── CURSOR ───────────────────────────────────────────────────────────────────
 const CustomCursor = () => {
+  const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const springX = useSpring(cursorX, { stiffness: 500, damping: 28 });
@@ -136,6 +148,7 @@ const CustomCursor = () => {
     return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseover", over); window.removeEventListener("mouseout", out); };
   }, []);
 
+  if (isTouchDevice) return null;
   return (
     <motion.div
       style={{ x: springX, y: springY, translateX: "-50%", translateY: "-50%", position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999 }}
@@ -166,6 +179,7 @@ const NAV_ITEMS = [
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 const Hero = () => {
+  const isMobile = useIsMobile();
   const targetRef = useRef(null);
 
   // Manual scroll progress — avoids Framer Motion v12 + Lenis v1.3.x useScroll bug.
@@ -269,15 +283,21 @@ const Hero = () => {
         {/* CTA buttons */}
         <motion.div style={{
           opacity: btnsOpacity,
-          display: "flex", justifyContent: "center",
-          marginTop: "2.6rem", gap: "1.2rem",
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "2.6rem", gap: "1rem",
           position: "relative", zIndex: 2,
+          padding: isMobile ? "0 1.5rem" : "0",
+          width: isMobile ? "100%" : "auto",
         }}>
           <a href="#work" data-hover style={{
             padding: "0.9rem 2.5rem", background: "#E8F020", color: "#080808",
             fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
             fontSize: "0.82rem", letterSpacing: "0.2em", textDecoration: "none",
-            textTransform: "uppercase",
+            textTransform: "uppercase", textAlign: "center",
+            width: isMobile ? "100%" : "auto",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
           }}>View Our Work</a>
           <a href="#contact" data-hover style={{
@@ -285,6 +305,7 @@ const Hero = () => {
             color: "#E8F020", fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 600, fontSize: "0.82rem", letterSpacing: "0.2em",
             textDecoration: "none", textTransform: "uppercase", background: "transparent",
+            textAlign: "center", width: isMobile ? "100%" : "auto",
             clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
           }}>Start a Project</a>
         </motion.div>
@@ -312,33 +333,53 @@ const HeroReveal = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      const total = heroRevealStatements.length;
+
+      // Build a timeline whose playhead is driven directly by scroll (scrub).
+      // Each statement occupies 1 timeline unit → smooth proportional mapping.
+      const tl = gsap.timeline();
+      const fadeIn  = 0.28;
+      const dwell   = 0.44;
+      const fadeOut = 0.28;
+
+      textRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const seg = i; // segment start in timeline units
+
+        if (i === 0) {
+          // First statement starts visible in JSX — only needs to fade out
+          tl.to(el,
+            { opacity: 0, filter: "blur(12px)", duration: fadeOut, ease: "power2.in" },
+            seg + fadeIn + dwell
+          );
+        } else if (i === total - 1) {
+          // Last statement fades in and holds permanently
+          tl.fromTo(el,
+            { opacity: 0, filter: "blur(12px)" },
+            { opacity: 1, filter: "blur(0px)", duration: fadeIn, ease: "power2.out" },
+            seg
+          );
+        } else {
+          tl.fromTo(el,
+            { opacity: 0, filter: "blur(12px)" },
+            { opacity: 1, filter: "blur(0px)", duration: fadeIn, ease: "power2.out" },
+            seg
+          );
+          tl.to(el,
+            { opacity: 0, filter: "blur(12px)", duration: fadeOut, ease: "power2.in" },
+            seg + fadeIn + dwell
+          );
+        }
+      });
+
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top top",
-        end: `+=${heroRevealStatements.length * 100}%`,
+        // 180 vh per statement — gives ample reading time per slide
+        end: `+=${total * 180}%`,
         pin: true,
-        scrub: 1,
-        onUpdate: (self) => {
-          const index = Math.min(
-            Math.floor(self.progress * heroRevealStatements.length),
-            heroRevealStatements.length - 1
-          );
-
-          textRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === index) {
-              gsap.to(el, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.out" });
-            } else {
-              gsap.to(el, { opacity: 0, scale: 0.92, filter: "blur(14px)", duration: 0.45, ease: "power2.out" });
-            }
-          });
-
-          if (counterRef.current) {
-            const n = String(index + 1).padStart(2, "0");
-            const t = String(heroRevealStatements.length).padStart(2, "0");
-            counterRef.current.textContent = `${n} / ${t}`;
-          }
-        },
+        scrub: 2,
+        animation: tl,
       });
     }, containerRef);
     return () => ctx.revert();
@@ -421,7 +462,7 @@ const HeroReveal = () => {
       </div> */}
 
       {/* Vertical accent */}
-      <div style={{
+      {/* <div style={{
         position: "absolute",
         left: "2.5rem",
         top: "50%",
@@ -430,7 +471,7 @@ const HeroReveal = () => {
         height: "28vh",
         background: "linear-gradient(to bottom, transparent, rgba(232,240,32,0.25), transparent)",
         zIndex: 10,
-      }} />
+      }} /> */}
 
       {/* Bottom label */}
       <div style={{
@@ -477,6 +518,7 @@ const Marquee = () => {
 
 // ─── PROJECTS (Skiper19 scroll path adapted) ──────────────────────────────────
 const Projects = () => {
+  const isMobile = useIsMobile();
   const ref = useRef(null);
   const sectionProgress = useMotionValue(0);
 
@@ -496,21 +538,23 @@ const Projects = () => {
   const pathLength = useTransform(sectionProgress, [0, 1], [0, 1]);
 
   return (
-    <section id="work" ref={ref} style={{ background: "#080808", padding: "8rem 0", position: "relative" }}>
-      {/* Decorative SVG line path */}
-      <svg style={{ position: "absolute", right: "5%", top: 0, height: "100%", width: "500px", overflow: "visible", pointerEvents: "none" }}
-        viewBox="0 0 300 2000" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <motion.path
-          d="M150 0 C200 200 50 300 150 500 C250 700 100 800 150 1000 C200 1200 50 1300 150 1500 C250 1700 100 1800 150 2000"
-          stroke="#e7ef15ff"
-          strokeWidth="6.5"
-          fill="none"
-          strokeDasharray="8 4"
-          style={{ pathLength, opacity: 0.25 }}
-        />
-      </svg>
+    <section id="work" ref={ref} style={{ background: "#080808", padding: isMobile ? "5rem 0" : "8rem 0", position: "relative" }}>
+      {/* Decorative SVG line path — hidden on mobile to prevent overflow */}
+      {!isMobile && (
+        <svg style={{ position: "absolute", right: "5%", top: 0, height: "100%", width: "500px", overflow: "visible", pointerEvents: "none" }}
+          viewBox="0 0 300 2000" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <motion.path
+            d="M150 0 C200 200 50 300 150 500 C250 700 100 800 150 1000 C200 1200 50 1300 150 1500 C250 1700 100 1800 150 2000"
+            stroke="#e7ef15ff"
+            strokeWidth="6.5"
+            fill="none"
+            strokeDasharray="8 4"
+            style={{ pathLength, opacity: 0.25 }}
+          />
+        </svg>
+      )}
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 2.5rem" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 1.25rem" : "0 2.5rem" }}>
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -535,6 +579,7 @@ const Projects = () => {
 };
 
 const ProjectRow = ({ project, index }) => {
+  const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
   return (
     <motion.div
@@ -547,23 +592,23 @@ const ProjectRow = ({ project, index }) => {
       data-hover
       style={{
         borderTop: "1px solid rgba(255,255,255,0.07)",
-        padding: "2.5rem 0",
+        padding: isMobile ? "1.5rem 0" : "2.5rem 0",
         display: "grid",
-        gridTemplateColumns: "60px 1fr auto",
+        gridTemplateColumns: isMobile ? "36px 1fr" : "60px 1fr auto",
         alignItems: "center",
-        gap: "2rem",
+        gap: isMobile ? "1rem" : "2rem",
         cursor: "pointer",
         transition: "background 0.3s",
         background: hovered ? "rgba(232,240,32,0.03)" : "transparent",
-        paddingLeft: hovered ? "1rem" : "0",
+        paddingLeft: hovered && !isMobile ? "1rem" : "0",
       }}
     >
       <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#333", fontSize: "0.75rem", letterSpacing: "0.2em" }}>0{index + 1}</span>
       <div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "1.5rem", marginBottom: "0.5rem" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
           <h3 style={{
             fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-            fontSize: "clamp(1.8rem, 3.5vw, 3rem)",
+            fontSize: isMobile ? "clamp(1.5rem, 6vw, 2.5rem)" : "clamp(1.8rem, 3.5vw, 3rem)",
             color: hovered ? project.color : "#fff",
             margin: 0,
             letterSpacing: "0.03em",
@@ -571,14 +616,20 @@ const ProjectRow = ({ project, index }) => {
           }}>{project.title}</h3>
           <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#444", fontSize: "0.75rem" }}>{project.year}</span>
         </div>
-        <AnimatePresence>
-          {hovered && (
-            <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-              style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888", fontSize: "0.9rem", margin: "0.3rem 0 0.8rem", lineHeight: 1.5 }}>
-              {project.desc}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {isMobile ? (
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888", fontSize: "0.85rem", margin: "0.3rem 0 0.8rem", lineHeight: 1.5 }}>
+            {project.desc}
+          </p>
+        ) : (
+          <AnimatePresence>
+            {hovered && (
+              <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888", fontSize: "0.9rem", margin: "0.3rem 0 0.8rem", lineHeight: 1.5 }}>
+                {project.desc}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        )}
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           {project.tags.map(t => (
             <span key={t} style={{
@@ -594,9 +645,11 @@ const ProjectRow = ({ project, index }) => {
           ))}
         </div>
       </div>
-      <motion.div animate={{ x: hovered ? 0 : 10, opacity: hovered ? 1 : 0 }} transition={{ duration: 0.3 }}>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", border: `1px solid ${project.color}`, display: "flex", alignItems: "center", justifyContent: "center", color: project.color, fontSize: "1.2rem" }}>→</div>
-      </motion.div>
+      {!isMobile && (
+        <motion.div animate={{ x: hovered ? 0 : 10, opacity: hovered ? 1 : 0 }} transition={{ duration: 0.3 }}>
+          <div style={{ width: 48, height: 48, borderRadius: "50%", border: `1px solid ${project.color}`, display: "flex", alignItems: "center", justifyContent: "center", color: project.color, fontSize: "1.2rem" }}>→</div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
@@ -607,9 +660,9 @@ const ProjectRow = ({ project, index }) => {
 // hook call is at the top level of a component, never inside a loop.
 const AnimatedChar = React.memo(({ char, index, centerIndex, scrollYProgress }) => {
   const distanceFromCenter = index - centerIndex;
-  const x = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 60, 0]);
-  const rotateX = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 40, 0]);
-  const opacity = useTransform(scrollYProgress, [0.32, 0.4], [0, 1]);
+  const x = useTransform(scrollYProgress, [0, 0.65], [distanceFromCenter * 60, 0]);
+  const rotateX = useTransform(scrollYProgress, [0, 0.65], [distanceFromCenter * 40, 0]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.60], [0, 1]);
   return (
     <motion.span
       style={{ x, rotateX, opacity, display: "inline-block", color: index < centerIndex ? "#E8F020" : "#fff" }}
@@ -620,6 +673,7 @@ const AnimatedChar = React.memo(({ char, index, centerIndex, scrollYProgress }) 
 });
 
 const Services = () => {
+  const isMobile = useIsMobile();
   const targetRef = useRef(null);
   const scrollYProgress = useMotionValue(0);
 
@@ -641,16 +695,15 @@ const Services = () => {
   const centerIndex = Math.floor(chars.length / 2);
 
   return (
-    <section id="services" ref={targetRef} style={{ background: "#0e0e0e", padding: "8rem 0 6rem", position: "relative", minHeight: "180vh" }}>
+    <section id="services" ref={targetRef} style={{ background: "#0e0e0e", padding: isMobile ? "4rem 0 3rem" : "8rem 0 6rem", position: "relative", minHeight: "280vh" }}>
       {/* Sticky scroll text reveal */}
       <div style={{ position: "sticky", top: "18vh", zIndex: 2, paddingBottom: "4rem" }}>
         <div style={{
           fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-          fontSize: "clamp(2rem, 5vw, 5.5rem)",
+          fontSize: "clamp(1.5rem, 5vw, 5.5rem)",
           textAlign: "center",
           letterSpacing: "-0.01em",
           perspective: "600px",
-          // display: "none",
         }}>
           {chars.map((char, index) => (
             <AnimatedChar
@@ -664,7 +717,7 @@ const Services = () => {
         </div>
       </div>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 2.5rem" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 1.25rem" : "0 2.5rem" }}>
         <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "3rem" }}>[ 02 ] What We Build</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.05)" }}>
           {SERVICES.map((service, i) => (
@@ -725,6 +778,7 @@ const ParallaxColumn = ({ color, yOffset, paddingTop }) => {
 };
 
 const ParallaxSection = () => {
+  const isMobile = useIsMobile();
   const ref = useRef(null);
   const scrollYProgress = useMotionValue(0);
 
@@ -749,12 +803,13 @@ const ParallaxSection = () => {
   const y3 = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
   const y4 = useTransform(scrollYProgress, [0, 1], ["0%", "-32%"]);
 
-  const cols = [
+  const allCols = [
     { y: y1, color: "#E8F020", top: "-10%" },
     { y: y2, color: "#20F0D4", top: "-30%" },
     { y: y3, color: "#F020A0", top: "-10%" },
     { y: y4, color: "#20A0F0", top: "-22%" },
   ];
+  const cols = isMobile ? allCols.slice(0, 2) : allCols;
 
   return (
     // Tall scroll target — gives scrollYProgress full range
@@ -777,7 +832,7 @@ const ParallaxSection = () => {
           The key insight: motion values drive translateY on the columns
           relative to the sticky container, so clipping works correctly. */}
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
-        <div style={{ display: "flex", gap: "1.5rem", padding: "2rem", height: "100%", alignItems: "flex-start" }}>
+        <div style={{ display: "flex", gap: isMobile ? "0.75rem" : "1.5rem", padding: isMobile ? "1rem" : "2rem", height: "100%", alignItems: "flex-start" }}>
           {cols.map(({ y, color, top }, i) => (
             <motion.div
               key={i}
@@ -838,6 +893,7 @@ const StackTicker = () => {
 
 // ─── STICKY CARDS — Premium Pinned Scroll ────────────────────────────────────
 const StickyCards = () => {
+  const isMobile = useIsMobile();
   const containerRef = useRef(null);
   const stageRefs = useRef([]);
   const labelRefs = useRef([]);
@@ -872,78 +928,128 @@ const StickyCards = () => {
     const ctx = gsap.context(() => {
       const total = items.length;
 
-      // GSAP owns all transforms from the start — set initial states imperatively
+      // Establish initial states for non-first elements before the timeline starts
       stageRefs.current.forEach((el, i) => {
-        if (!el) return;
-        gsap.set(el, {
-          opacity: i === 0 ? 1 : 0,
-          y: i === 0 ? 0 : 44,
-          filter: i === 0 ? "blur(0px)" : "blur(14px)",
-        });
+        if (!el || i === 0) return;
+        gsap.set(el, { opacity: 0, y: 32, filter: "blur(12px)" });
       });
+      if (labelRefs.current[0]) gsap.set(labelRefs.current[0], { x: 10 });
       labelRefs.current.forEach((el, i) => {
-        if (!el) return;
-        gsap.set(el, { x: i === 0 ? 10 : 0 });
+        if (!el || i === 0) return;
+        gsap.set(el, { color: "#282828", x: 0 });
       });
       tickerRefs.current.forEach((el, i) => {
+        if (!el || i === 0) return;
+        gsap.set(el, { scaleY: 0, opacity: 0 });
+      });
+
+      // Single scrubbed timeline — playhead position maps 1:1 to scroll progress.
+      // Each stage occupies 1 timeline unit so proportions stay stable.
+      const tl = gsap.timeline();
+      const fadeIn  = 0.24;
+      const dwell   = 0.52;
+      const fadeOut = 0.24;
+
+      // ── Stage panels ──────────────────────────────────────────────────────
+      stageRefs.current.forEach((el, i) => {
         if (!el) return;
-        gsap.set(el, { scaleY: i === 0 ? 1 : 0, opacity: i === 0 ? 1 : 0 });
+        const seg = i;
+
+        if (i === 0) {
+          tl.to(el,
+            { opacity: 0, y: -32, filter: "blur(12px)", duration: fadeOut, ease: "power2.in" },
+            seg + fadeIn + dwell
+          );
+        } else if (i === total - 1) {
+          tl.fromTo(el,
+            { opacity: 0, y: 32, filter: "blur(12px)" },
+            { opacity: 1, y: 0,  filter: "blur(0px)",  duration: fadeIn, ease: "power2.out" },
+            seg
+          );
+        } else {
+          tl.fromTo(el,
+            { opacity: 0, y: 32, filter: "blur(12px)" },
+            { opacity: 1, y: 0,  filter: "blur(0px)",  duration: fadeIn, ease: "power2.out" },
+            seg
+          );
+          tl.to(el,
+            { opacity: 0, y: -32, filter: "blur(12px)", duration: fadeOut, ease: "power2.in" },
+            seg + fadeIn + dwell
+          );
+        }
+      });
+
+      // ── Nav labels ────────────────────────────────────────────────────────
+      labelRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const seg  = i;
+        const dur  = 0.18;
+
+        if (i === 0) {
+          // Active at start; dims when next stage enters
+          tl.to(el,
+            { color: "rgba(232,240,32,0.18)", x: 0, duration: dur, ease: "power2.inOut" },
+            seg + 0.76
+          );
+        } else {
+          tl.fromTo(el,
+            { color: "#282828", x: 0 },
+            { color: "#E8F020", x: 10, duration: dur, ease: "power2.out" },
+            seg + 0.08
+          );
+          if (i < total - 1) {
+            tl.to(el,
+              { color: "rgba(232,240,32,0.18)", x: 0, duration: dur, ease: "power2.inOut" },
+              seg + 0.76
+            );
+          }
+        }
+      });
+
+      // ── Ticker bars ───────────────────────────────────────────────────────
+      tickerRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const seg = i;
+        const dur = 0.18;
+
+        if (i === 0) {
+          tl.to(el,
+            { opacity: 0.22, duration: dur, ease: "power2.inOut" },
+            seg + 0.76
+          );
+        } else {
+          tl.fromTo(el,
+            { scaleY: 0, opacity: 0 },
+            { scaleY: 1, opacity: 1, duration: dur, ease: "power2.out" },
+            seg + 0.08
+          );
+          if (i < total - 1) {
+            tl.to(el,
+              { opacity: 0.22, duration: dur, ease: "power2.inOut" },
+              seg + 0.76
+            );
+          }
+        }
       });
 
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top top",
-        end: `+=${total * 100}%`,
+        // 150 vh per stage — each panel has ~78 vh of dwell time
+        end: `+=${total * 150}%`,
         pin: true,
-        scrub: 1.5,
+        scrub: 2,
+        animation: tl,
         onUpdate(self) {
-          const raw = self.progress * total;
-          const idx = Math.min(Math.floor(raw), total - 1);
-
-          // Progress bar (no tween — instant with scroll)
+          // Progress bar and counter update immediately with scroll (not lagged)
           if (progressFillRef.current) {
             progressFillRef.current.style.width = `${self.progress * 100}%`;
           }
-          // Counter
           if (counterRef.current) {
+            const idx = Math.min(Math.floor(self.progress * total), total - 1);
             counterRef.current.textContent =
               `${String(idx + 1).padStart(2, "0")} — ${String(total).padStart(2, "0")}`;
           }
-
-          // Content panels: fade + slide + blur
-          stageRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === idx) {
-              gsap.to(el, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.65, ease: "power3.out", overwrite: "auto" });
-            } else {
-              const dir = i < idx ? -1 : 1;
-              gsap.to(el, { opacity: 0, y: dir * 44, filter: "blur(14px)", duration: 0.65, ease: "power3.out", overwrite: "auto" });
-            }
-          });
-
-          // Nav labels: color + subtle slide
-          labelRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === idx) {
-              gsap.to(el, { color: "#E8F020", x: 10, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            } else if (i < idx) {
-              gsap.to(el, { color: "rgba(232,240,32,0.18)", x: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            } else {
-              gsap.to(el, { color: "#282828", x: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            }
-          });
-
-          // Vertical accent bars: scale + fade
-          tickerRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === idx) {
-              gsap.to(el, { scaleY: 1, opacity: 1, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            } else if (i < idx) {
-              gsap.to(el, { scaleY: 1, opacity: 0.22, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            } else {
-              gsap.to(el, { scaleY: 0, opacity: 0, duration: 0.5, ease: "power2.out", overwrite: "auto" });
-            }
-          });
         },
       });
     }, containerRef);
@@ -1007,12 +1113,12 @@ const StickyCards = () => {
       <div style={{
         maxWidth: "1280px",
         margin: "0 auto",
-        padding: "0 2.5rem",
+        padding: isMobile ? "0 1.25rem" : "0 2.5rem",
         width: "100%",
         display: "grid",
-        gridTemplateColumns: "minmax(240px, 1fr) 1.65fr",
-        gap: "clamp(3rem, 6vw, 7rem)",
-        alignItems: "center",
+        gridTemplateColumns: isMobile ? "1fr" : "minmax(240px, 1fr) 1.65fr",
+        gap: isMobile ? "1.5rem" : "clamp(3rem, 6vw, 7rem)",
+        alignItems: isMobile ? "start" : "center",
         position: "relative",
         zIndex: 2,
       }}>
@@ -1028,17 +1134,17 @@ const StickyCards = () => {
 
           <h2 style={{
             fontFamily: "'Bebas Neue', 'Anton', sans-serif",
-            fontSize: "clamp(2.8rem, 4.5vw, 5.5rem)",
+            fontSize: isMobile ? "clamp(2rem, 8vw, 3.5rem)" : "clamp(2.8rem, 4.5vw, 5.5rem)",
             color: "#fff", lineHeight: 0.88,
-            margin: "0 0 clamp(2.5rem, 4vh, 4rem)",
+            margin: isMobile ? "0 0 1rem" : "0 0 clamp(2.5rem, 4vh, 4rem)",
             letterSpacing: "-0.01em",
           }}>
             FROM BRIEF<br />
             <span style={{ color: "#E8F020" }}>TO SHIPPED</span>
           </h2>
 
-          {/* Stage nav */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          {/* Stage nav — hidden on mobile (GSAP refs remain, just visually hidden) */}
+          <div style={{ display: isMobile ? "none" : "flex", flexDirection: "column" }}>
             {items.map((item, i) => (
               <div
                 key={i}
@@ -1081,7 +1187,7 @@ const StickyCards = () => {
         </div>
 
         {/* ─── RIGHT: Stage content panels (absolutely stacked) ─── */}
-        <div style={{ position: "relative", height: "clamp(300px, 42vh, 460px)" }}>
+        <div style={{ position: "relative", height: isMobile ? "clamp(260px, 52vh, 380px)" : "clamp(300px, 42vh, 460px)" }}>
           {items.map((item, i) => (
             <div
               key={i}
@@ -1153,9 +1259,10 @@ const StickyCards = () => {
 
 // ─── ABOUT / MANIFESTO ────────────────────────────────────────────────────────
 const About = () => {
+  const isMobile = useIsMobile();
   const words = "WE DON'T BUILD FOR MEDIOCRITY. THE BRANDS THAT LEAD DON'T SETTLE FOR AVERAGE DIGITAL. NEITHER DO WE.".split(" ");
   return (
-    <section style={{ background: "#E8F020", padding: "8rem 2.5rem" }}>
+    <section style={{ background: "#E8F020", padding: isMobile ? "4rem 1.25rem" : "8rem 2.5rem" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           {words.map((word, i) => (
@@ -1180,7 +1287,7 @@ const About = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
-          style={{ marginTop: "4rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}
+          style={{ marginTop: isMobile ? "2rem" : "4rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: isMobile ? "1.5rem" : "3rem" }}
         >
           {[["18+", "Products Delivered"], ["5+", "Years of Craft"], ["3×", "Average Client ROI"], ["100%", "Founder-Led Studio"]].map(([num, label], i) => (
             <div key={i}>
@@ -1196,10 +1303,11 @@ const About = () => {
 
 // ─── CONTACT ──────────────────────────────────────────────────────────────────
 const Contact = () => {
+  const isMobile = useIsMobile();
   return (
-    <section id="contact" style={{ background: "#080808", padding: "10rem 2.5rem 8rem", position: "relative", overflow: "hidden" }}>
+    <section id="contact" style={{ background: "#080808", padding: isMobile ? "5rem 1.25rem 4rem" : "10rem 2.5rem 8rem", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", bottom: "10%", right: "5%", opacity: 0.04 }}>
-        <WolfLogo size={400} />
+        <WolfLogo size={isMobile ? 200 : 400} />
       </div>
       <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 2 }}>
         <motion.div
@@ -1209,10 +1317,10 @@ const Contact = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#E8F020", fontSize: "0.75rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "1.5rem" }}>[ 05 ] Let's Build</p>
-          <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(4rem, 10vw, 10rem)", color: "#fff", lineHeight: 0.88, margin: "0 0 3rem", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif", fontSize: "clamp(3rem, 10vw, 10rem)", color: "#fff", lineHeight: 0.88, margin: "0 0 2rem", letterSpacing: "-0.02em" }}>
             YOUR NEXT<br /><span style={{ color: "#E8F020" }}>PROJECT STARTS HERE.</span>
           </h2>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#666", fontSize: "1.1rem", lineHeight: 1.7, maxWidth: "500px", marginBottom: "3rem" }}>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#666", fontSize: isMobile ? "1rem" : "1.1rem", lineHeight: 1.7, maxWidth: "500px", marginBottom: isMobile ? "2rem" : "3rem" }}>
             Tell us what you're working on. We'll tell you exactly how we can make it exceptional.
           </p>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
@@ -1222,15 +1330,17 @@ const Contact = () => {
               color: "#080808",
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "0.9rem",
+              fontSize: isMobile ? "0.8rem" : "0.9rem",
               letterSpacing: "0.15em",
               textDecoration: "none",
               textTransform: "uppercase",
               clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-              display: "inline-block",
+              display: "block",
+              textAlign: "center",
+              width: isMobile ? "100%" : "auto",
             }}>hello@thewolfage.com</a>
           </div>
-          <div style={{ display: "flex", gap: "2rem", marginTop: "4rem" }}>
+          <div style={{ display: "flex", gap: isMobile ? "1.25rem" : "2rem", marginTop: isMobile ? "2.5rem" : "4rem", flexWrap: "wrap" }}>
             {["GitHub", "LinkedIn", "Twitter", "Dribbble"].map(link => (
               <a key={link} href="#" data-hover style={{
                 fontFamily: "'Space Grotesk', sans-serif",
@@ -1544,6 +1654,11 @@ const FontImport = () => (
     ::-webkit-scrollbar-thumb { background: #E8F020; }
     a { cursor: none; }
     button { cursor: none; }
+    @media (hover: none) {
+      body { cursor: auto !important; }
+      a { cursor: pointer !important; }
+      button { cursor: pointer !important; }
+    }
   `}</style>
 );
 
