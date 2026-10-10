@@ -72,6 +72,7 @@
   margin: 0 0 1rem;
   font-family: var(--font-body);
   font-weight: 600;
+  display: none; /* hidden on mobile, shown on tablet/desktop */
   font-size: 0.72rem;
   line-height: 1.2;
   letter-spacing: 0.3em;
