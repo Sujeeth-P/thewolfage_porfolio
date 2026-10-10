@@ -59,11 +59,11 @@ const Hero = ({ openModal }) => {
         <p className="hero__kicker">{HERO_COPY.kicker}</p>
 
         <h1 id="hero-title" className="hero__title" aria-label="The Wolf Age">
-          <span className="hero__line" aria-hidden="true"><span style={{ '--d': '0.05s' }}>THE</span></span>{' '}
+          <span className="hero__line" aria-hidden="true"><span style={{ '--d': '0.15s' }}>THE</span></span>{' '}
           <span className="hero__line" aria-hidden="true">
-            <span className="hero__outline" style={{ '--d': '0.14s' }}>WOLF</span>
-          </span>{' '}
-          <span className="hero__line" aria-hidden="true"><span style={{ '--d': '0.23s' }}>AGE</span></span>
+            <span className="hero__outline" style={{ '--d': '0.24s' }}>WOLF</span>
+          </span>
+          <span className="hero__line" aria-hidden="true"><span style={{ '--d': '0.33s' }}>AGE</span></span>
         </h1>
 
         <p className="hero__sub">{HERO_COPY.sub}</p>

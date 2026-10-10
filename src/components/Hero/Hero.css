@@ -1,5 +1,6 @@
 /* Hero — mobile-first. Everything is visible on first paint; the intro is
    CSS-only (transform/opacity) and finishes in about a second. */
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
 .hero {
   position: relative;
@@ -66,6 +67,7 @@
   justify-content: center;
   text-align: center;
   padding: max(5.5rem, calc(env(safe-area-inset-top) + 5rem)) 1.25rem 2rem;
+  transform: translateY(7%);
 }
 
 .hero__kicker {
@@ -83,16 +85,20 @@
 
 .hero__title {
   margin: 0;
-  font-family: var(--font-display);
+  /* font-family: var(--font-display); */
+  font-family: 'Anton', sans-serif;
   font-weight: 400;
+  font-style: normal;
   color: var(--yellow);
-  line-height: 0.86;
-  letter-spacing: 0.02em;
-  /* 3 stacked lines on phones; sized by width AND height so it never pushes the CTAs off short screens */
-  font-size: clamp(3.4rem, min(25vw, 14.5svh), 9rem);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-size: clamp(3.2rem, 15vw, 10.8rem);
+  padding-bottom: 1.9rem;
 }
 .hero__line {
-  display: block;
+  display: inline-block;
+  vertical-align: top;
   overflow: hidden;           /* mask for the slide-up reveal */
   padding-block: 0.08em;
   margin-block: -0.08em;
@@ -108,9 +114,9 @@
 
 .hero__sub {
   max-width: 34rem;
-  margin: 1.25rem auto 0;
-  font-size: clamp(0.98rem, 3.9vw, 1.15rem);
-  line-height: 1.6;
+  margin: 0 auto;
+  font-size: clamp(0.96rem, 3.8vw, 1.15rem);
+  line-height: 1.45;
   color: #b8b8b8;
   animation: heroUp 0.8s var(--ease-out) 0.55s both;
 }
@@ -130,18 +136,20 @@
 @keyframes heroUp   { from { opacity: 0; transform: translate3d(0, 14px, 0); } }
 @keyframes heroFade { from { opacity: 0; } }
 
-/* Tablet / desktop: single-line headline, side-by-side buttons, gentle parallax */
+/* Tablet / desktop: preserve the single wide headline treatment while keeping the
+   parallax and CTA layout clean. */
 @media (min-width: 900px) {
   .hero__wolf { opacity: 0.26; }
   .hero__wolf img { will-change: transform; }
-  .hero__inner { padding-top: 6rem; }
-  .hero__kicker { font-size: 0.8rem; margin-bottom: 1.4rem;  }
+  .hero__inner { padding-top: 6rem; transform: translateY(5%); }
+  .hero__kicker { font-size: 0.8rem; margin-bottom: 1.4rem; }
   .hero__title {
-    font-size: clamp(5rem, 12.5vw, 13rem);
+    font-size: clamp(5.8rem, 11vw, 12.8rem);
     white-space: nowrap;
+    padding-bottom: 1.3rem;
   }
   .hero__line { display: inline-block; vertical-align: top; }
-  .hero__sub { margin-top: 1.75rem; }
+  .hero__sub { margin-top: 0.2rem; }
   .hero__cta {
     flex-direction: row;
     width: auto;
@@ -154,9 +162,9 @@
 /* Short landscape phones */
 @media (max-height: 560px) and (orientation: landscape) {
   .hero__inner { padding-top: 4.5rem; }
-  .hero__title { font-size: min(20vh, 7rem); }
+  .hero__title { font-size: min(20vh, 7rem);}
   .hero__line { display: inline-block; vertical-align: top; }
   .hero__sub { display: none; }
-  .hero__kicker { padding-bottom: 10px;}
+  .hero__kicker {display: none; }
   .hero__cta { flex-direction: row; width: auto; max-width: none; }
 }
