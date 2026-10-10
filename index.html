@@ -2,12 +2,120 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>temp-vite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>The Wolf Age — Digital Studio for Web, Mobile, ERP &amp; Brand</title>
+    <meta
+      name="description"
+      content="The Wolf Age is a founder-led digital studio building websites, mobile apps, custom ERP systems and brand content for businesses that want to stand out."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://www.thewolfage.live/" />
+
+    <!-- Social previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Wolf Age" />
+    <meta property="og:title" content="The Wolf Age — Digital Studio for Web, Mobile, ERP &amp; Brand" />
+    <meta
+      property="og:description"
+      content="We design and build websites, mobile apps and ERP systems — plus the brand content that makes your business impossible to ignore."
+    />
+    <meta property="og:url" content="https://www.thewolfage.live/" />
+    <meta property="og:image" content="https://www.thewolfage.live/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Wolf Age — wolf logo on a black background" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Wolf Age — Digital Studio for Web, Mobile, ERP &amp; Brand" />
+    <meta
+      name="twitter:description"
+      content="We design and build websites, mobile apps and ERP systems — plus the brand content that makes your business impossible to ignore."
+    />
+    <meta name="twitter:image" content="https://www.thewolfage.live/og-image.png" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts are self-hosted (@font-face in src/index.css). Preload the ones the hero paints with. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/bebas-neue-400.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/space-grotesk-400.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/space-grotesk-600.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/space-grotesk-700.woff2" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "The Wolf Age",
+        "alternateName": "Wolfage",
+        "url": "https://www.thewolfage.live/",
+        "logo": "https://www.thewolfage.live/apple-touch-icon.png",
+        "image": "https://www.thewolfage.live/og-image.png",
+        "email": "support@thewolfage.live",
+        "description": "Founder-led digital studio building websites, mobile apps, custom ERP systems and brand content.",
+        "knowsAbout": [
+          "Web application development",
+          "Mobile app development",
+          "ERP software",
+          "Personal branding",
+          "Product photography"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "sales",
+          "email": "support@thewolfage.live"
+        }
+      }
+    </script>
+
+    <!-- Critical CSS: dark paint immediately, and a crawlable first screen that React replaces on load -->
+    <style>
+      html, body { margin: 0; background: #080808; }
+      .boot {
+        min-height: 100vh; min-height: 100svh;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; padding: 5.5rem 1.25rem 2rem; box-sizing: border-box;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #8a8a8a;
+      }
+      .boot h1 {
+        margin: 0; font-family: Impact, 'Arial Narrow', sans-serif; font-weight: 400;
+        font-size: clamp(3.4rem, 17vw, 8rem); line-height: 0.9; letter-spacing: 0.02em; color: #E8F020;
+      }
+      .boot p { max-width: 32rem; margin: 1rem 0 0; line-height: 1.6; }
+      .boot ul { list-style: none; margin: 1.25rem 0 0; padding: 0; font-size: 0.85rem; line-height: 1.9; }
+      .boot a { color: #E8F020; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot">
+        <h1>The Wolf Age</h1>
+        <p>Digital Craft · Fearless Execution</p>
+        <p>
+          We design and build websites, mobile apps and ERP systems — plus the brand content
+          that makes your business impossible to ignore.
+        </p>
+        <ul>
+          <li>Web Applications</li>
+          <li>Mobile Applications</li>
+          <li>ERP Solutions</li>
+          <li>Personal Branding</li>
+          <li>Product Shoots</li>
+          <li>Strategy &amp; Consulting</li>
+        </ul>
+        <p><a href="mailto:support@thewolfage.live">support@thewolfage.live</a></p>
+      </div>
+    </div>
+    <noscript>
+      <p style="color:#8a8a8a;text-align:center;font-family:system-ui,sans-serif;padding:1rem">
+        The Wolf Age needs JavaScript for the full experience. Email us at
+        <a href="mailto:support@thewolfage.live" style="color:#E8F020">support@thewolfage.live</a>.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

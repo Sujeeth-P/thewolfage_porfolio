@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.claude/
+
+.env*
+!.env.example
+.env.production
+.env.development
+
+wolf_red*
+goal.txt

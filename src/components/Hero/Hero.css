@@ -1,0 +1,160 @@
+/* Hero — mobile-first. Everything is visible on first paint; the intro is
+   CSS-only (transform/opacity) and finishes in about a second. */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--bg);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(232, 240, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 240, 32, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.hero__glow {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: -2;
+  width: 130vw;
+  height: 130vw;
+  max-width: 1000px;
+  max-height: 1000px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(232, 240, 32, 0.11), transparent 70%);
+  pointer-events: none;
+  animation: heroFade 1.4s ease-out both;
+}
+
+.hero__wolf {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: -1;
+  width: min(92vw, 560px);
+  transform: translate(-50%, -50%);
+  opacity: 0.17;
+  pointer-events: none;
+  animation: heroFade 1.4s ease-out both;
+}
+.hero__wolf img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: translate3d(0, var(--wolf-y, 0px), 0);
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: max(5.5rem, calc(env(safe-area-inset-top) + 5rem)) 1.25rem 2rem;
+}
+
+.hero__kicker {
+  margin: 0 0 1rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  animation: heroUp 0.8s var(--ease-out) 0.15s both;
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--yellow);
+  line-height: 0.86;
+  letter-spacing: 0.02em;
+  /* 3 stacked lines on phones; sized by width AND height so it never pushes the CTAs off short screens */
+  font-size: clamp(3.4rem, min(25vw, 14.5svh), 9rem);
+}
+.hero__line {
+  display: block;
+  overflow: hidden;           /* mask for the slide-up reveal */
+  padding-block: 0.08em;
+  margin-block: -0.08em;
+}
+.hero__line > span {
+  display: block;
+  animation: heroRise 0.9s var(--ease-out) var(--d, 0s) both;
+}
+.hero__outline {
+  color: #fff;
+  -webkit-text-stroke: 2px var(--yellow);
+}
+
+.hero__sub {
+  max-width: 34rem;
+  margin: 1.25rem auto 0;
+  font-size: clamp(0.98rem, 3.9vw, 1.15rem);
+  line-height: 1.6;
+  color: #b8b8b8;
+  animation: heroUp 0.8s var(--ease-out) 0.55s both;
+}
+
+.hero__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 360px;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  animation: heroUp 0.8s var(--ease-out) 0.7s both;
+}
+
+@keyframes heroRise { from { transform: translate3d(0, 105%, 0); } }
+@keyframes heroUp   { from { opacity: 0; transform: translate3d(0, 14px, 0); } }
+@keyframes heroFade { from { opacity: 0; } }
+
+/* Tablet / desktop: single-line headline, side-by-side buttons, gentle parallax */
+@media (min-width: 900px) {
+  .hero__wolf { opacity: 0.26; }
+  .hero__wolf img { will-change: transform; }
+  .hero__inner { padding-top: 6rem; }
+  .hero__kicker { font-size: 0.8rem; margin-bottom: 1.4rem; }
+  .hero__title {
+    font-size: clamp(5rem, 12.5vw, 13rem);
+    white-space: nowrap;
+  }
+  .hero__line { display: inline-block; vertical-align: top; }
+  .hero__sub { margin-top: 1.75rem; }
+  .hero__cta {
+    flex-direction: row;
+    width: auto;
+    max-width: none;
+    gap: 1rem;
+    margin-top: 2.25rem;
+  }
+}
+
+/* Short landscape phones */
+@media (max-height: 560px) and (orientation: landscape) {
+  .hero__inner { padding-top: 4.5rem; }
+  .hero__title { font-size: min(20vh, 7rem); }
+  .hero__line { display: inline-block; vertical-align: top; }
+  .hero__sub { display: none; }
+  .hero__cta { flex-direction: row; width: auto; max-width: none; }
+}
