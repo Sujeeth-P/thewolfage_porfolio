@@ -135,7 +135,7 @@
   .hero__wolf { opacity: 0.26; }
   .hero__wolf img { will-change: transform; }
   .hero__inner { padding-top: 6rem; }
-  .hero__kicker { font-size: 0.8rem; margin-bottom: 1.4rem; }
+  .hero__kicker { font-size: 0.8rem; margin-bottom: 1.4rem;  }
   .hero__title {
     font-size: clamp(5rem, 12.5vw, 13rem);
     white-space: nowrap;
@@ -157,5 +157,6 @@
   .hero__title { font-size: min(20vh, 7rem); }
   .hero__line { display: inline-block; vertical-align: top; }
   .hero__sub { display: none; }
+  .hero__kicker { padding-bottom: 10px;}
   .hero__cta { flex-direction: row; width: auto; max-width: none; }
 }
